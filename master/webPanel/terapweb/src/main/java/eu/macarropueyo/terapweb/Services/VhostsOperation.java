@@ -85,7 +85,7 @@ public class VhostsOperation
     public void updateVhost(Vhost vh)
     {
         //Solicita al servicio interno actualizar el equipo
-        vh.update();
+        vh.lastUpdate.setTime(new java.util.Date().getTime());
         vhRepo.save(vh);
     }
 
@@ -96,7 +96,7 @@ public class VhostsOperation
     public void checkStatus(Vhost vh)
     {
         //Solicita al servicio interno que compruebe el estado del vhost y actualice la base de datos
-        vh.check();
+        vh.lastCheck.setTime(new java.util.Date().getTime());
         vhRepo.save(vh);
     }
 
@@ -317,23 +317,42 @@ public class VhostsOperation
         return tmp;
     }
 
+    /**
+     * Retorna la lista de hosts.
+     * @return
+     */
     public List<Vhost> getListVhosts()
     {
         return vhRepo.findAll();
     }
 
+    /**
+     * Actualiza la ip de un host.
+     * @param vhost
+     * @param ip
+     */
     public void updateIp(Vhost vhost, String ip)
     {
         vhost.ip=ip;
         vhRepo.save(vhost);
     }
 
+    /**
+     * Actualiza los nucleos de un host.
+     * @param vhost
+     * @param cores
+     */
     public void updateCores(Vhost vhost, int cores)
     {
         vhost.cores=cores;
         vhRepo.save(vhost);
     }
 
+    /**
+     * Actualiza los memoria de un host.
+     * @param vhost
+     * @param mem
+     */
     public void updateMem(Vhost vhost, int mem)
     {
         vhost.mem=mem;

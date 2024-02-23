@@ -52,7 +52,7 @@ public class Vhost
     /**
      * Ultima comprobacion realizada por el sistema
      */
-    public Date chk;
+    public Date lastCheck;
     /**
      * Ultima actualizacion de sistema del vhost
      */
@@ -83,7 +83,7 @@ public class Vhost
         this.freq=freq;
         this.mem=mem;
         this.status=StatusHost.CLOSE;
-        this.chk=new Date(0);
+        this.lastCheck=new Date(0);
         this.lastUpdate=new Date(0);
     }
 
@@ -95,51 +95,6 @@ public class Vhost
     public boolean acceptVM()
     {
         return this.status.acceptEntries();
-    }
-
-    /**
-     * @deprecated
-     * Solicita al servicio interno que actualice el OS del vhost
-     */
-    public void update()
-    {
-        this.lastUpdate.setTime(new java.util.Date().getTime());
-    }
-
-    /**
-     * @deprecated
-     * Solicita al servicio interno que haga un check al vhost
-     */
-    public void check()
-    {
-        getLastCheck().setTime(new java.util.Date().getTime());
-    }
-
-    /**
-     * Retorna el timestamp del ultimo update en formato string
-     * @return
-     */
-    public String getUpdateString()
-    {
-        return this.lastUpdate.toString();
-    }
-
-    /**
-     * Ultima comprobacion del sistema
-     * @return
-     */
-    public Date getLastCheck()
-    {
-        return this.chk;
-    }
-
-    /**
-     * Retorna el timestamp del ultimo check en formato string
-     * @return
-     */
-    public String getLastCheckString()
-    {
-        return this.chk.toString();
     }
 
     /**
