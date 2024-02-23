@@ -23,15 +23,14 @@ public class VhostsOperation
     private LogHostRepository logRepo;
 
     /**
-     * Crea un nuevo vhost
-     * @param ip direccion de red
-     * @param cores nucleos de cpu
-     * @param freq frecuencia de cpu
-     * @param mem memoria principal en MiB
-     * @param user usuario con el que acceder al sistema
-     * @param pass password del usuario para crear vinculo de claves
-     * @return
-     * Retorna el nuevo Vhost si ha sido posible crearlo (null en caso contrario)
+     * Create a new vhost and share ssh keys
+     * @param ip address of net
+     * @param cores cores of cpu
+     * @param freq frequency of cpu
+     * @param mem memory in MiB
+     * @param user user for access to the system
+     * @param pass password of user
+     * @return Return the new Vhost if have been create (null if not)
      */
     public Vhost addVhost(String ip, int cores, int freq, int mem, String user, String pass)
     {
@@ -49,48 +48,46 @@ public class VhostsOperation
     }
 
     /**
-     * Borra un vhost, no quita las claves ssh
-     * @param ip
-     * @return
-     * True si ha sido posible, false si no existe o tiene VMs
+     * Remove a vhost, dont delete the ssh keys
+     * @param vhost Host for remove, they cant have vms
+     * @return True if are remove, false if not exist or have vms
      */
     public boolean removeVhost(Vhost vhost)
     {
-        if(vhost==null)
+        if(vhost==null) //The host exist
             return false;
-        if(!vhost.vms.isEmpty())
+        if(!vhost.vms.isEmpty()) //Host is empty
             return false;
-        vhRepo.delete(vhost);
+        vhRepo.delete(vhost); //Delete host
         return true;
     }
 
     /**
-     * Busca un Vhost a partir de su direccion
+     * Search a host with a specific address
      * @param ip
-     * @return
-     * Null en caso de no existir
+     * @return Null if not exist
      */
     public Vhost getVhost(String ip)
     {
-        Optional<Vhost> tmp = vhRepo.findByIp(ip);
-        if(tmp.isEmpty())
+        Optional<Vhost> tmp = vhRepo.findByIp(ip); //search the host
+        if(tmp.isEmpty()) //not found
             return null;
-        return tmp.get();
+        return tmp.get(); //found
     }
 
     /**
-     * Actualiza el host especificado, operacion bloqueante
+     * Update the host, lock operation
      * @param vh
      */
     public void updateVhost(Vhost vh)
     {
-        //Solicita al servicio interno actualizar el equipo
+        //Solicita al servicio interno actualizar el equipo BLOQUEANTE
         vh.lastUpdate.setTime(new java.util.Date().getTime());
         vhRepo.save(vh);
     }
 
     /**
-     * Comprueba el estado del vhost, operacion bloqueante
+     * Check the state of the host, lock operation
      * @param vh
      */
     public void checkStatus(Vhost vh)
@@ -101,7 +98,7 @@ public class VhostsOperation
     }
 
     /**
-     * Habilita el modo mantenimiento del vhost.
+     * Enable the maintenance mode over the host
      * @param vh
      */
     public void maintenance(Vhost vh)
@@ -112,7 +109,7 @@ public class VhostsOperation
     }
 
     /**
-     * Cierra el vhost, no permite asignar nuevas vm.
+     * Lock the host, does not permit assign new vms.
      * @param vh
      */
     public void lock(Vhost vh)
@@ -123,13 +120,13 @@ public class VhostsOperation
     }
 
     /**
-     * Retorna el estado del vhost a lo mas perfecto que el se encuentre.
+     * Change the state of the host to the best state is possible
      * @param vh
      */
     public void clear(Vhost vh)
     {
         checkStatus(vh);
-        //Estados marcados por la aplicacion web
+        //States of the webapp
         if(vh.status==StatusHost.MAINTENANCE||vh.status==StatusHost.CLOSE||vh.status==StatusHost.EXPULSE)
         {
             vh.status=StatusHost.OK;
@@ -138,7 +135,7 @@ public class VhostsOperation
     }
 
     /**
-     * Expulsa a todas las vm a otros vhosts, si no los hubiera, espera a que aparezca un hueco.
+     * Eject all vms of the host, to other hosts. If not have other hosts, wait to find.
      * @param vh
      */
     public void expulse(Vhost vh)
@@ -158,11 +155,9 @@ public class VhostsOperation
     }
 
     /**
-     * Mueve una vm de un vhost a otro especificado
-     * @param dest
-     * Vhost destino de mover la vm
-     * @param vm
-     * Vm a mover, de ella se obtiene su vhost actual
+     * Move one vm to other host
+     * @param dest Vhost target
+     * @param vm Vm for move
      */
     public void move(Vhost dest, VM vm)
     {
@@ -220,7 +215,7 @@ public class VhostsOperation
     }
 
     /**
-     * Retorna el maximo de cores que puede tener una vm.
+     * Return the biggest number of cores might have a vm
      * @return
      */
     public int getMaxCores()
@@ -233,7 +228,7 @@ public class VhostsOperation
     }
 
     /**
-     * Retorna el maximo de memoria que puede tener una vm.
+     * Return the biggest memory might have a vm
      * @return
      */
     public int getMaxMem()
@@ -246,7 +241,7 @@ public class VhostsOperation
     }
 
     /**
-     * Retorna frecuencia maxima de cpu que puede tener una vm.
+     * Return the biggest frequency might have a vm
      * @return
      */
     public int getMaxFreq()
@@ -259,7 +254,7 @@ public class VhostsOperation
     }
 
     /**
-     * Rotorna todo el log de un vhost
+     * Return all log of a host
      * @param vhost
      * @return
      */
@@ -269,10 +264,9 @@ public class VhostsOperation
     }
 
     /**
-     * Retorna los ultimos logs de un vhost especificado (indicados por parametro)
+     * Return the last logs of a host
      * @param vhost
-     * @param lasts
-     * los n ultimos logs
+     * @param lasts The last n logs
      * @return
      */
     public List<LogHost> getLog(Vhost vhost, int lasts)
@@ -281,10 +275,9 @@ public class VhostsOperation
     }
 
     /**
-     * Retorna todos los logs de un host posteriores a una fecha
+     * Return all logs of a host before of a date
      * @param vhost
-     * @param at
-     * de esta fecha en adelante son los logs solicitados
+     * @param at The logs are after this date
      * @return
      */
     public List<LogHost> getLog(Vhost vhost, Date at)
@@ -295,7 +288,7 @@ public class VhostsOperation
     }
 
     /**
-     * Rotorna todo el log de todos los hosts
+     * Return all logs of all hosts
      * @return
      */
     public List<LogHost> getLog()
@@ -304,10 +297,8 @@ public class VhostsOperation
     }
 
     /**
-     * Retorna todos los logs posteriores a una fecha
-     * @param vhost
-     * @param at
-     * de esta fecha en adelante son los logs solicitados
+     * Return all logs of all hosts before of a date
+     * @param at The logs are after this date
      * @return
      */
     public List<LogHost> getLog(Date at)
@@ -318,7 +309,7 @@ public class VhostsOperation
     }
 
     /**
-     * Retorna la lista de hosts.
+     * Return a list with all hosts
      * @return
      */
     public List<Vhost> getListVhosts()
@@ -327,9 +318,9 @@ public class VhostsOperation
     }
 
     /**
-     * Actualiza la ip de un host.
-     * @param vhost
-     * @param ip
+     * Update the address of a host
+     * @param vhost the host
+     * @param ip the address
      */
     public void updateIp(Vhost vhost, String ip)
     {
@@ -338,7 +329,7 @@ public class VhostsOperation
     }
 
     /**
-     * Actualiza los nucleos de un host.
+     * Update the cores of the host
      * @param vhost
      * @param cores
      */
@@ -349,9 +340,9 @@ public class VhostsOperation
     }
 
     /**
-     * Actualiza los memoria de un host.
+     * Update the memory of the host
      * @param vhost
-     * @param mem
+     * @param mem memory in MiB
      */
     public void updateMem(Vhost vhost, int mem)
     {
