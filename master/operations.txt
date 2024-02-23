@@ -1,0 +1,86 @@
+
+Comentarios:
+Tanto los storages como los vhost funcionan por ordenes del sistema de gestión (system).
+Las VM son controladas por sus usuarios asociados.
+Las VM bien las pueden crear los usuarios o los grupos segun las restricciones, pero siempre bajo el control de un usuario.
+Las restricciones sirven para definir las politicas del cluster.
+Las pool tambien son targets de iscsi.
+
+
+Listado de operaciones que se pueden aplicar desde el master:
+
+#VHOST
+###
+Añadir un nodo vhost.
+Quitar un nodo vhost.
+Comprobar estado del vhost (conexión, acceso, libvirtd, firewall...)
+Comprobar caracteristicas del vhost (cpu, mem...)
+Comprobar disponibilidad del vhost (si esta desbloqueado, cpu libre, mem libre...)
+Comprobar uso del vhost (% de las caracteristicas en tiempo de la solicitud)
+Comprobar estadisticas del vhost (% de las caracteristicas en el ultimo mes)
+Asociar vm a un vhost (crea una vm no definida en el vhost)
+Desasociar una vm de un vhost (borra la definicion de una vm)
+Bloquear vhost
+Desbloquear vhost
+Salvar un vhost (poner todas sus vm en hibernación)
+Apagar un vhost
+Recargar pools (cargar las definiciones de pool de todo el cluster)
+Migrar una vm de un vhost a otro
+
+#STORAGE
+###
+Añadir un nodo storage.
+Quitar un nodo storage.
+Comprobar estado del storage (conexión, acceso, estado de los discos, firewall, targets...)
+Comprobar caracteristicas del storage (disco, ancho de banda, slots de disco)
+Comprobar disponibilidad del storage (si esta desbloqueado, disco libre, ancho de banda libre, slots de discos libres...)
+Comprobar uso del storage (% de las caracteristicas en tiempo de la solicitud)
+Comprobar estadisticas del storage (% de las caracteristicas en el ultimo mes)
+Bloquear un storage.
+Desbloquear un storage.
+Crear una target.
+Borrar una target.
+Crear un disco.
+Borrar un disco.
+Apagar un storage
+
+#VM
+###
+Crear una vm (se crea una definición)
+Borrar una vm (elimina la definición)
+Asociar una vm con un vhost (incluye su definición en el vhost)
+Arrancar una vm
+Apagar una vm
+Forzar apagado en una vm
+Pausar una vm
+Salvar la vm (ponerla en hibernación)
+Redimensionar una vm (solo ram y cores)
+Solicitar expansion de disco (no garantizada y solo la encapsulación, los resize de particiones a cargo del OS guest)
+Solicitar crear disco nuevo (no garantizada)
+Consultar ubicacion fisica (de todos sus componentes)
+Definir imagenes
+Cargar imagenes a nueva vm
+
+#USUARIOS
+##
+Crear usuario
+Actualizar datos de usuario (mail, passwd...)
+Asociar vm a usuario
+Desasociar vm a usuario
+Enviar mail a usuario
+
+#GRUPOS
+###
+Crear rol
+Incluir usuario
+Asociar rol a usuario
+Cambiar rol (cambia sus propiedades o su nombre)
+Expulsar usuario de un rol
+Expulsar usuario
+
+#RESTRICCIONES
+###
+Generar restricción
+Asociar usuario a una restricción
+Quitar restricción a un usuario
+Cambiar atributos de restricción

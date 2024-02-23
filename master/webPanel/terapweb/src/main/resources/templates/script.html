@@ -1,0 +1,86 @@
+<script type="text/javascript" th:inline="javascript">
+
+    //Notificaciones del systema
+    /*<![CDATA[*/
+        var message = /*[[${msgOfSystem}]]*/ 'default';
+        if(message)
+            alert(message);
+    /*]]>*/
+
+    function desplegar(elemento)
+    {
+        var tmp=document.getElementsByName(elemento)[0];
+        if(tmp.style.display=="none")
+            tmp.style.display="block";
+        else
+            tmp.style.display="none";
+    }
+    
+    function centrarTag(pestana)
+    {
+        var pages=document.getElementsByClassName('tagPages')
+        for(i=0;i<pages.length;i++)
+        {
+            if(pages[i].getAttribute('name')==pestana)
+                pages[i].style.display='block'
+            else
+            pages[i].style.display='none'
+        }
+    }
+    /*
+    Get code from https://www.w3schools.com/js/js_ajax_intro.asp
+    */
+    function loadDoc(key) {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function() {
+            document.getElementById("demo").innerHTML = this.responseText;
+        }
+        xhttp.open("GET", key);
+        xhttp.send();
+    }
+
+    function vmExecute(op) {
+        const xhttp = new XMLHttpRequest();
+        var uuid = document.getElementById("uuid").value;
+        xhttp.open("POST", "/home/vmoperation");
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("operation="+op+"&uuid="+uuid);
+    }
+
+    function vmGetMoreSpace()
+    {
+        var size = prompt('how much space do you want in GB? (the request may take time)');
+        if(size == null)
+            return false;
+        const xhttp = new XMLHttpRequest();
+        var uuid = document.getElementById("uuid").value;
+        xhttp.open("POST", "/home/vmoperation");
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("operation=MoreDisk&uuid="+uuid+"&newSize="+size);
+    }
+
+    function vmExecuteConfirm(op, msg)
+    {
+        if(!confirm(msg))
+            return false;
+        const xhttp = new XMLHttpRequest();
+        var uuid = document.getElementById("uuid").value;
+        xhttp.open("POST", "/home/vmoperation");
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("operation="+op+"&uuid="+uuid);
+    }
+
+    function changePropertieOfList(id, msg)
+    {
+        var tmp = prompt(msg);
+        if(tmp == null)
+            return false;
+        document.getElementById(id).value = tmp;
+        return true;
+    }
+
+    function viewMembersOfGroup(grupo)
+    {
+        //Buscar el grupo y moverlo a la tabla de vision de grupos
+    }
+</script>

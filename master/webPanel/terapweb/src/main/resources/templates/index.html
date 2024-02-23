@@ -1,0 +1,19 @@
+<div th:replace= "head"></div>
+
+<div id="homeError" th:if="${errorBox} == true">
+  <p>ERROR</p>
+  <p>Your username or password is not correct, please confirm before trying again. If it persists, contact the administrator.</p>
+</div>
+
+<div id="login" th:if="${errorBox} == false">
+  <form action="/" method="POST" th:if="${userAcces} == false">
+    <p>User:</p>
+    <input type="text" name="user"/>
+    <p>Password:</p>
+    <input type="password" name="passwd"/>
+    <p></p>
+    <input type="submit" value="login!"/>
+  </form>
+</div>
+
+<div th:replace= "foot"></div>

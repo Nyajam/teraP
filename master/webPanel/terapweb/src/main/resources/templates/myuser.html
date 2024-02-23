@@ -1,0 +1,35 @@
+<div th:replace= "head"></div>
+<aside>
+    <div class="align-left">
+      <h3 th:text="${pageName}"></h3>
+      <button onclick="centrarSection('request')">My request</button>
+      <button onclick="alert('hola')">Virtual Machines</button>
+      <button onclick="alert('hola')">Set cluster</button>
+    </div>
+  </aside>
+  <section class="section" id="request">
+    <article id="tags">
+      <div class="align-left"></div>
+      <button onclick="centrarTag('request','tag1')">Page 1</button>
+      <button onclick="centrarTag('request','tag2')">Page 2</button>
+      <button onclick="centrarTag('request','tag3')">Page 3</button>
+      <button onclick="centrarTag('request','tag4')">Page 4</button>
+      <button onclick="centrarTag('request','tag5')">Page 5</button>
+    </article>
+    <article style="display: block;" name="tag1" class="tagPages">
+      <p>Page 1</p>
+    </article>
+    <article style="display: none;" name="tag2" class="tagPages">
+      <p>Page 2</p>
+    </article>
+    <article style="display: none;" name="tag3" class="tagPages">
+      <p>Page 3</p>
+    </article>
+    <article style="display: none;" name="tag4" class="tagPages">
+      <p>Page 4</p>
+    </article>
+    <article style="display: none;" name="tag5" class="tagPages">
+      <p>Page 5</p>
+    </article>
+  </section>
+  <div th:replace= "foot"></div>

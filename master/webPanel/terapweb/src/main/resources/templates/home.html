@@ -1,0 +1,780 @@
+<div th:replace= "head"></div>
+<aside>
+    <div class="align-left">
+      <h3 th:text="${pageName}"></h3>
+      <th:block th:each="Nsection : ${sections}">
+        <a class="nbtn" th:href="${Nsection[1]}" th:utext="${Nsection[0]}"></a>
+      </th:block>
+    </div>
+  </aside>
+  <section class="section" id="request">
+    <article id="tags">
+      <div class="align-left"></div>
+      <th:block th:each="Ntag : ${tags}">
+        <button type="button" th:utext="${Ntag[0]}" th:attr="onclick=|centrarTag('${Ntag[0]}')|"></button>
+      </th:block>
+    </article>
+    <th:block th:each="Ntag : ${tags}">
+
+      <article style="display: block;" th:attr="name=|${Ntag[0]}|" class="tagPages"><!--Secciones o paginas sin recarga-->
+        <h2 th:utext="${Ntag[0]}"></h2>
+
+        <div th:if="${Ntag[1]}=='0'" class="pageTag"> <!--List of all vhosts (with operations) and form of new vhost-->
+          <div class="floatsBlocks"> <!--List of all vhosts (with operations)-->
+            <h3>List of virtual hosts</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${headers}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${vhosts}">
+                <tr>
+                  <td>
+                    <form method="post" action="/admin/hosts" th:onsubmit="|return changePropertieOfList('changeIpOfHost${row.id}', 'introduce the new ip of the virtual host')|">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input th:id="|changeIpOfHost${row.id}|" type="submit" name="newIpHost" th:value="${row.ip}">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/hosts" th:onsubmit="|return changePropertieOfList('changeCoresOfHost${row.id}', 'introduce the new size of cores of the virtual host')|">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input th:id="|changeCoresOfHost${row.id}|" type="submit" name="newCoresHost" th:value="${row.cores}">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/hosts" th:onsubmit="|return changePropertieOfList('changeMemOfHost${row.id}', 'introduce the new size of memory (in GB) of the virtual host')|">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input th:id="|changeMemOfHost${row.id}|" type="submit" name="newMemHost" th:value="${row.mem}">
+                    </form>
+                  </td>
+                  <td th:utext="${row.status}"></td>
+                  <td th:utext="${row.chk}"></td>
+                  <td th:utext="${row.lastUpdate}"></td>
+                  <td th:utext="${row.ratio()}"></td>
+                  <td>
+                    <form method="post" action="/admin/hosts">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input type="submit" name="mode" value="Lock">
+                      <input type="submit" name="mode" value="Unlock">
+                      <input type="submit" name="mode" value="Maintenance">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/hosts">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input type="submit" name="mode" value="Update">
+                      <input type="submit" name="delete" value="DELETE" style="color: red;">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+          <div class="floatsBlocks"> <!--Form for add one vhost-->
+            <h3>New virtual hosts</h3>
+            <form method="post" action="/admin/hosts">
+              <p>
+                IP:<br>
+                <input type="text" name="ip">
+              </p>
+              <p>
+                Cores:<br>
+                <input type="number" name="cores">
+              </p>
+              <p>
+                Memory (in GB):<br>
+                <input type="number" name="mem">
+              </p>
+              <p>
+                Frequency of processor (in MHz):<br>
+                <input type="number" name="freq">
+              </p>
+              <p>
+                Virtualization system administrator username:<br>
+                <input type="text" name="userad">
+              </p>
+              <p>
+                Password of this user:<br>
+                <input type="password" name="pass">
+              </p>
+              <input type="submit" value="Create">
+            </form>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='1'" class="pageTag"> <!--Log of vhosts-->
+          <div class="floatsBlocks">
+            <h3>Log hosts</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${logHeaders}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${log}">
+                <tr>
+                  <td th:utext="${row.vhost}"></td>
+                  <td th:utext="${row.date}"></td>
+                  <td th:utext="${row.message}"></td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+
+
+        <div th:if="${Ntag[1]}=='3'" class="pageTag"> <!--Storages-->
+          <div class="floatsBlocks"> <!--List of storages-->
+            <h3>List of storages</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${headers}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${storages}">
+                <tr>
+                  <td>
+                    <form method="post" action="/admin/storages" th:onsubmit="|return changePropertieOfList('changeIpOfStorage${row.id}', 'introduce the new ip of the storage')|">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input th:id="|changeIpOfStorage${row.id}|" type="submit" name="newIpStorage" th:value="${row.ip}">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/storages" th:onsubmit="|return changePropertieOfList('changeSizeOfStorage${row.id}', 'Introduce the new value for the space')|">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input th:id="|changeSizeOfStorage${row.id}|" type="submit" name="newSpace" th:value="${row.space}">
+                    </form>
+                  </td>
+                  <td th:utext="${row.status}"></td>
+                  <td th:utext="${row.getFreeSpace()}"></td>
+                  <td th:utext="${row.ratio()}"></td>
+                  <td>
+                    <form method="post" action="/admin/storages">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input type="submit" name="mode" value="Lock">
+                      <input type="submit" name="mode" value="Unlock">
+                      <input type="submit" name="mode" value="Maintenance">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/storages">
+                      <input type="hidden" name="host" th:value="${row.ip}">
+                      <input type="submit" name="delete" value="DELETE" style="color: red;">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+          <div class="floatsBlocks"> <!--Add form storage-->
+            <h3>New storages</h3>
+            <form method="post" action="/admin/storages">
+              <p>
+                IP:<br>
+                <input type="text" name="ip">
+              </p>
+              <p>
+                Space (in GB):<br>
+                <input type="number" name="space">
+              </p>
+              <p>
+                Bandwidth (in Mbps):<br>
+                <input type="number" name="bandwidth">
+              </p>
+              <p>
+                iSCSI system administrator username:<br>
+                <input type="text" name="userad">
+              </p>
+              <p>
+                Password of this user:<br>
+                <input type="password" name="pass">
+              </p>
+              <input type="submit" value="Create">
+            </form>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='4'" class="pageTag"> <!--Log of storages-->
+          <div class="floatsBlocks">
+            <h3>Log storages</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${logHeaders}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${log}">
+                <tr>
+                  <td th:utext="${row.storage}"></td>
+                  <td th:utext="${row.date}"></td>
+                  <td th:utext="${row.message}"></td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+
+
+        <div th:if="${Ntag[1]}=='2'" class="pageTag"> <!--Requests of VMs-->
+          <div class="floatsBlocks"> <!--List of requests-->
+            <h3>Requests in the cluster</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${requestsHeaders}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${requests}">
+                <tr>
+                  <td th:utext="${row.group}"></td>
+                  <td th:utext="${row.date}"></td>
+                  <td th:utext="${row.cores}"></td>
+                  <td th:utext="${row.mem}"></td>
+                  <td>
+                    <form method="post" action="/admin/vms">
+                      <input type="hidden" name="uuid" th:value="${row.uuid}">
+                      <input type="submit" name="grantVm" th:value="${row.status}">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+          <div class="floatsBlocks"> <!--Free resources of cluster-->
+            <h3>Free resources</h3>
+            <p th:text="${freeDisk}"></p>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${freeResourcesHeaders}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${freeResources}">
+                <tr>
+                  <td th:utext="${row.getNoneUse()[0]}"></td>
+                  <td th:utext="${row.getNoneUse()[1]}"></td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+          <div class="floatsBlocks"> <!--Requests of extra space disk-->
+            <h3>Requests of more space</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${requestsDiskHeaders}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${requestsDisk}">
+                <tr>
+                  <td th:utext="${row.expansion}"></td>
+                  <td th:utext="${row}"></td>
+                  <td>
+                    <form method="post" action="/admin/vms">
+                      <input type="hidden" name="expansionId" th:value="${row.id}">
+                      <input type="submit" name="denegateExpansion" value="DENEGATE" style="color: red;">
+                      <input type="submit" name="grantExpansion" value="GRANT" style="color: green;">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='5'" class="pageTag"> <!--All VMs are define-->
+          <div class="floatsBlocks">
+            <h3>Requests in the cluster</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${vmControlHeader}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${vmControl}">
+                <tr>
+                  <td th:utext="${row.uuid}"></td>
+                  <td th:utext="${row.group}"></td>
+                  <td th:utext="${row.status}"></td>
+                  <td th:utext="${row.cores}"></td>
+                  <td th:utext="${row.mem}"></td>
+                  <td th:utext="${row.getSpace()}"></td>
+                  <td th:utext="${row.date}"></td>
+                  <td>
+                    <form method="post" action="/admin/vms">
+                      <input type="hidden" name="uuid" th:value="${row.uuid}">
+                      <input type="submit" name="mode" value="Start">
+                      <input type="submit" name="mode" value="Shutdown">
+                      <input type="submit" name="mode" value="ForceShutdown">
+                      <input type="submit" name="mode" value="REMAKE" style="color: red;" onclick="return confirm('Are you sure? This action erase all data')">
+                      <input type="submit" name="mode" value="DELETE" style="color: red;" onclick="return confirm('Are you sure? This action delete the vm')">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+
+
+        <div th:if="${Ntag[1]}=='6'" class="pageTag"> <!--Admin users-->
+          <div class="floatsBlocks"> <!--List and edit users-->
+            <h3>Users list</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${headers}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${users}">
+                <tr>
+                  <td th:utext="${row.name}"></td>
+                  <td>
+                    <form method="post" action="/admin/users" th:onsubmit="|return changePropertieOfList('changeMailUser${row.id}', 'Introduce the new mail for this user')|">
+                      <input type="hidden" name="name" th:value="${row.name}">
+                      <input type="hidden" name="field" value="mail">
+                      <input type="submit" name="value" th:value="${row.mail}" th:id="|changeMailUser${row.id}|">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/users" onsubmit="return confirm('Do you want grant/revoke root to this user?')">
+                      <input type="hidden" name="name" th:value="${row.name}">
+                      <input type="hidden" name="field" value="root">
+                      <input type="submit" name="value" th:value="${row.root}">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/users" onsubmit="return confirm('Do you want lock/unlock this user?')">
+                      <input type="hidden" name="name" th:value="${row.name}">
+                      <input type="hidden" name="field" value="status">
+                      <input type="submit" name="value" th:value="${row.status}">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/users" th:onsubmit="|return changePropertieOfList('changeLimitUserVms${row.id}', 'How many VMs have this user?')|">
+                      <input type="hidden" name="name" th:value="${row.name}">
+                      <input type="hidden" name="field" value="maxvms">
+                      <input type="submit" name="value" th:value="${row.myGroup.maxvms}" th:id="|changeLimitUserVms${row.id}|">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/users" th:onsubmit="|return changePropertieOfList('changeLimitUserCores${row.id}', 'How many cores have this user? (in total)')|">
+                      <input type="hidden" name="name" th:value="${row.name}">
+                      <input type="hidden" name="field" value="maxcores">
+                      <input type="submit" name="value" th:value="${row.myGroup.maxcores}" th:id="|changeLimitUserCores${row.id}|">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/users" th:onsubmit="|return changePropertieOfList('changeLimitUserMem${row.id}', 'How many memory (RAM in GiB) have this user? (in total)')|">
+                      <input type="hidden" name="name" th:value="${row.name}">
+                      <input type="hidden" name="field" value="maxmem">
+                      <input type="submit" name="value" th:value="${row.myGroup.maxmem}" th:id="|changeLimitUserMem${row.id}|">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/users" th:onsubmit="|return changePropertieOfList('changeLimitUserDisk${row.id}', 'How many disk (size in GiB) have this user? (in total)')|">
+                      <input type="hidden" name="name" th:value="${row.name}">
+                      <input type="hidden" name="field" value="maxdisk">
+                      <input type="submit" name="value" th:value="${row.myGroup.maxdisk}" th:id="|changeLimitUserDisk${row.id}|">
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/users" onsubmit="return confirm('Are you sure? This action deleting this user')">
+                      <input type="hidden" name="name" th:value="${row.name}">
+                      <input type="submit" name="delete" value="DELETE" style="color: red;">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+          <div class="floatsBlocks">
+            <h3>New user form</h3>
+            <form method="post" action="/admin/users">
+              <p>
+                Name:<br>
+                <input type="text" name="newUserName">
+              </p>
+              <p>
+                Mail:<br>
+                <input type="email" name="newUserMail">
+              </p>
+              <input type="submit" value="Create">
+            </form>
+          </div>
+        </div>
+        <div th:if="${Ntag[1]}=='9'" class="pageTag"> <!--  -->
+          <div class="floatsBlocks">
+            <h3>The groups</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Date</th>
+                <th>Max VMs</th>
+                <th>Max cores</th>
+                <th>Max mem</th>
+                <th>Max disk</th>
+                <th>Members</th>
+                <th>Options</th>
+              </tr>
+              <th:block th:each="row : ${groups}">
+                <tr>
+                  <td th:utext="${row.name}"></td>
+                  <td th:utext="${row.user.name}"></td>
+                  <td th:utext="${#dates.format(row.date, 'yyyy-MM-dd')}"></td>
+                  <td th:utext="${row.maxvms}"></td>
+                  <td th:utext="${row.maxcores}"></td>
+                  <td th:utext="${row.maxmem}"></td>
+                  <td th:utext="${row.maxdisk}"></td>
+                  <td>
+                    <button th:onclick="|viewMembersOfGroup('idGroup-${row.id}')|">View</button>
+                    <div th:id="|idGroup-${row.id}|" style="display: none;">
+                      <th:block th:each="member : ${row.users}">
+                        <div>
+                          <div th:utext="${member.name}"></div>
+                          </div>
+                      </th:block>
+                    </div>
+                  </td>
+                  <td>
+                    <form>
+                      <input type="submit" value="DELETE" style="color: red;">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+
+          <div class="floatsBlocks">
+            <h3>Members of group:</h3>
+            <table style="border: 1px solid black" id="groupMembers">
+            </table>
+          </div>
+        </div>
+
+
+        <!--EMPIEZA EL HOME-->
+        <div th:if="${Ntag[1]}=='100'" class="pageTag"> <!--Lista de todas las requests-->
+          <div class="floatsBlocks">
+            <h3>Global requests</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${headersRequests}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${vms}">
+                <tr>
+                  <th:block th:each="us : ${row.group}">
+                    <td th:utext="${us.name}"></td>
+                  </th:block>
+                  <td th:utext="${#dates.format(row.date, 'yyyy-MM-dd')}"></td>
+                  <td th:utext="${row.cores}"></td>
+                  <td th:utext="${row.mem}"></td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='102'" class="pageTag"> <!--Lista global de grupos-->
+          <div class="floatsBlocks">
+            <h3>All groups</h3>
+            <table style="border: 1px solid black; text-align: center;">
+              <tr>
+                <th:block th:each="header : ${headersAllGroups}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${allGroups}">
+                <tr>
+                  <td th:utext="${row}"></td>
+                  <td th:utext="${row.users.size()+1}"></td> <!--+1 porque el admin va aparte-->
+                  <td>
+                    <form method="post" action="/home">
+                      <input type="hidden" name="join" th:value="${row}"/>
+                      <input type="submit" value="Join to group"/>
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='103'" class="pageTag"> <!--Peticiones realizadas PENDIENTE DE HACER-->
+          <div class="floatsBlocks">
+            <h3>My petitions for groups</h3>
+            <table style="border: 1px solid black; text-align: center;">
+              <tr>
+                <th:block th:each="header : ${headersMyPetition}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${myPetition}">
+                <tr>
+                  <td th:utext="${row.name}"></td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='104'" class="pageTag"> <!--Gestion de mis requests-->
+          <div class="floatsBlocks"> <!--My requests-->
+            <h3>My requests</h3>
+            <table style="border: 1px solid black">
+              <tbody>
+                <tr>
+                  <th:block th:each="header : ${headersMyRequests}">
+                    <th th:utext="${header}"></th>
+                  </th:block>
+                </tr>
+                <th:block th:each="request : ${dataMyRequests}">
+                  <tr>
+                    <td th:utext="${request.status}"></td>
+                    <td th:utext="${#dates.format(request.date, 'yyyy-MM-dd')}"></td>
+                    <td th:utext="${request.cores}"></td>
+                    <td th:utext="${request.mem}"></td>
+                    <td>
+                      <form th:if="!${request.isDefine}" method="post" action="/home/myvms">
+                        <input type="hidden" th:value="${request.uuid}" name="uuid">
+                        <input type="submit" style="color: red;" value="DELETE">
+                      </form>
+                    </td>
+                  </tr>
+                </th:block>
+              </tbody>
+            </table>
+            <p>If the status is NOTDEFINED, the request has not been granted.</p>
+          </div>
+          <div class="floatsBlocks"> <!--Formulario nueva requests-->
+            <h3>New Request</h3>
+            <form method="post" action="/home/myvms">
+              <p th:utext="'Cores of procesor, default is '+${vmcoreval}+':'"></p>
+              <input type="number" name="vmcore" th:value="${vmcoreval}" th:min="${vmcoremin}" th:max="${vmcoremax}">
+              <p th:utext="'Frequency of procesor (in MHz), default is '+${vmfreqval}+':'"></p>
+              <input type="number" name="vmfreq" th:value="${vmfreqval}" th:min="${vmfreqmin}" th:max="${vmfreqmax}">
+              <p th:utext="'Memory (in GiB), default is '+${vmmemval}+':'"></p>
+              <input type="number" name="vmmem" th:value="${vmmemval}" th:min="${vmmemmin}" th:max="${vmmemmax}">
+              <br>
+              <input type="submit" value="Create">
+            </form>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='105'" class="pageTag"> <!--Usuarios con los que comparto mis VMs-->
+          <div class="floatsBlocks">
+            <h3>Shares</h3>
+            <table style="border: 1px solid black">
+              <tbody>
+                <tr>
+                  <th:block th:each="header : ${headersMyShares}">
+                    <th th:utext="${header}"></th>
+                  </th:block>
+                </tr>
+                <th:block th:each="user : ${shares}">
+                  <tr>
+                    <td th:utext="${user.name}"></td>
+                    <td>
+                      <form method="post" action="/home/myvms">
+                        <input type="hidden" th:value="${user.name}" name="unshare">
+                        <input type="submit" style="color: red;" value="UNSHARE">
+                      </form>
+                    </td>
+                  </tr>
+                </th:block>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='106'" class="pageTag"> <!--Lista de mis VMs (con sus controles)-->
+          <div class="floatsBlocks">
+            <h3>My VMs</h3>
+            <table style="border: 1px solid black;">
+              <tbody>
+                <tr>
+                  <th:block th:each="header : ${vmControlHeader}">
+                    <th th:utext="${header}"></th>
+                  </th:block>
+                </tr>
+                <th:block th:each="vme : ${vmOperate}">
+                  <tr>
+                    <td th:utext="${vme.uuid}"></td>
+                    <td th:utext="${vme.cores}"></td>
+                    <td th:utext="${vme.mem}"></td>
+                    <td th:utext="${vme.space}"></td>
+                    <td>
+                      <input type="hidden" th:value="${vme.uuid}" id="uuid">
+                      <input type="button" name="operation" value="Connect" style="color: green;" th:onclick="document.getElementsByName('vncScreen')[0].src=[[${vme.conection}]]">
+                      <input type="button" name="operation" value="Start" onclick="vmExecute('Start')">
+                      <input type="button" name="operation" value="Shutdown" onclick="vmExecute('Shutdown')">
+                      <input type="button" name="operation" value="ForceShutdown" onclick="vmExecute('ForceShutdown')">
+                      <th:block th:if="${iMaster}">
+                        <input type="button" name="operation" value="MoreDisk" onclick="vmGetMoreSpace()">
+                        <input type="button" name="operation" value="REMAKE" style="color: red;" onclick="vmExecuteConfirm('REMAKE', 'If you confirm, all data are erase')">
+                        <input type="button" name="operation" value="DELETE" style="color: red;" onclick="vmExecuteConfirm('DELETE', 'If you confirm, the vm are destroy and erase data and free reservation')">
+                      </th:block>
+                    </td>
+                  </tr>
+                </th:block>
+              </tbody>
+              </table>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='107'" class="pageTag"> <!--Monitor VNC-->
+          <!-- novnc_proxy --listen 6080 --vnc localhost:5900 -->
+          <iframe style="width: 100%;" name="vncScreen" onload="this.style.height = (document.getElementsByClassName('tagPages')[2].clientHeight-29) + 'px';"></iframe>
+        </div>
+
+        <div th:if="${Ntag[1]}=='110'" class="pageTag"> <!--Lista de los grupos del usuario y acceso a estos-->
+          <div class="floatsBlocks">
+            <h3>My Groups</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${headersGroups}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${groups}">
+                <tr>
+                  <td th:utext="${row.name}"></td>
+                  <td>
+                    <form method="post" action="/home/mygroups">
+                      <input type="hidden" th:value="${row.name}" name="groupselect">
+                      <input type="submit" style="color: green;" value="VIEW">
+                    </form>
+                    <form method="post" action="/home/mygroups">
+                      <input type="hidden" th:value="${row.name}" name="exitgroup">
+                      <input type="submit" style="color: red;" value="EXIT">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+
+        <div th:if="${Ntag[1]}=='111'" class="pageTag"> <!--Gestion de tu grupo-->
+          <div class="floatsBlocks"> <!--Lista de usuarios del grupo-->
+            <h3>Users of the group</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${headersListUsers}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${listUsers}">
+                <tr>
+                  <td th:utext="${row.name}"></td>
+                  <td>
+                    <form method="post" action="/home/mygroups">
+                      <input type="hidden" th:value="${row.name}" name="expulse">
+                      <input type="hidden" th:value="${groupname}" name="groupselect">
+                      <input type="submit" style="color: reed;" value="EXPULSE">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+          <div class="floatsBlocks"> <!--Lista de peticiones pendientes del grupo-->
+            <h3>Pending petitions</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${headersPendingPetitions}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${pendingPetitions}">
+                <tr>
+                  <td th:utext="${row.name}"></td>
+                  <td>
+                    <form method="post" action="/home/mygroups">
+                      <input type="hidden" th:value="${row.name}" name="acceptpetition">
+                      <input type="hidden" th:value="${groupname}" name="groupselect">
+                      <input type="submit" style="color: green;" value="ACCEPT">
+                    </form>
+                    <form method="post" action="/home/mygroups">
+                      <input type="hidden" th:value="${row.name}" name="declinepetition">
+                      <input type="hidden" th:value="${groupname}" name="groupselect">
+                      <input type="submit" style="color: red;" value="DECLINE">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+          <div class="floatsBlocks"> <!--Lista de requests del grupo-->
+            <h3>My requests</h3>
+            <table style="border: 1px solid black">
+              <tbody>
+                <tr>
+                  <th:block th:each="header : ${headersMyRequests}">
+                    <th th:utext="${header}"></th>
+                  </th:block>
+                </tr>
+                <th:block th:each="request : ${dataMyRequests}">
+                  <tr>
+                    <td th:utext="${request.status}"></td>
+                    <td th:utext="${#dates.format(request.date, 'yyyy-MM-dd')}"></td>
+                    <td th:utext="${request.cores}"></td>
+                    <td th:utext="${request.mem}"></td>
+                    <td>
+                      <form th:if="!${request.isDefine}" method="post" action="/home/mygroups">
+                        <input type="hidden" th:value="${request.uuid}" name="deleteRequest">
+                        <input type="hidden" th:value="${groupname}" name="groupselect">
+                        <input type="submit" style="color: red;" value="DELETE">
+                      </form>
+                    </td>
+                  </tr>
+                </th:block>
+              </tbody>
+            </table>
+            <p>If the status is NOTDEFINED, the request has not been granted.</p>
+          </div>
+          <div class="floatsBlocks"> <!--Formulario de request del grupo-->
+            <h3>New Request</h3>
+            <form method="post" action="/home/mygroups">
+              <input type="hidden" th:value="${groupname}" name="groupselect">
+              <p th:utext="'Cores of procesor, default is '+${vmcoreval}+':'"></p>
+              <input type="number" name="vmcore" th:value="${vmcoreval}" th:min="${vmcoremin}" th:max="${vmcoremax}">
+              <p th:utext="'Frequency of procesor (in MHz), default is '+${vmfreqval}+':'"></p>
+              <input type="number" name="vmfreq" th:value="${vmfreqval}" th:min="${vmfreqmin}" th:max="${vmfreqmax}">
+              <p th:utext="'Memory (in GiB), default is '+${vmmemval}+':'"></p>
+              <input type="number" name="vmmem" th:value="${vmmemval}" th:min="${vmmemmin}" th:max="${vmmemmax}">
+              <br>
+              <input type="submit" value="Create">
+            </form>
+          </div>
+          <div class="floatsBlocks"> <!--BOTON DE BORRADO DE GRUPO-->
+            <h3>DELETE THIS GROUP</h3>
+            <form method="post" action="/home/mygroups" onsubmit="return confirm('Are you absolutely sure you want to delete this group?')">
+              <p>
+                Information: this action don't have return.
+                <br>
+                Its definitive.
+              </p>
+              <p>
+                The group its only posible deleted when,
+                <br>
+                dont have VMs, requests (VMs not defined)
+                <br>
+                and users (except the responsable user).</p>
+              <input type="hidden" name="deleteGroup" th:value="${groupname}">
+              <input type="submit" style="background-color: red;" value="DELETE">
+            </form>
+          </div>
+        </div>
+
+        <!--TERMINA EL HOME-->
+      </article>
+    </th:block>
+  </section>
+  <div th:replace= "foot"></div>

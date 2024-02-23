@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title th:text=${title}></title>
+    <meta charset="UTF-8">
+    <meta name="title" th:content="${title}">
+    <meta name="description" th:content="${generalPageDescription}">
+    <link rel="icon" type="image/jpg" th:href="${logoUrl}"/>
+    <style th:replace= "style"></style>
+    <script th:replace= "script"></script>
+  </head>
+  <body>
+    <header>
+      <a href="/" style="margin: 0;">
+        <img id=logo th:src="${logoUrl}" width="60" height="60" />
+        <h1 th:text=${title}></h1>
+      </a>
+    </header>
+    <nav th:if="${userAcces} == true">
+      <div class="nav2">
+        <!-- Navegacion -->
+        <a class="navBT" href="/home" th:style="'background-color: '+${colorBhome}+';'">
+          <i class="material-icons">home</i>
+        </a>
+        <a class="navBT" href="/myuser" th:style="'background-color: '+${colorBmyuser}+';'">
+          <i class="material-icons">person</i>
+        </a>
+        <a class="navBT" href="/help" th:style="'background-color: '+${colorBhelp}+';'">
+          <i class="material-icons">help</i>
+        </a>
+        <a class="navBT" href="/admin" th:if="${admP}" th:style="'background-color: '+${colorBadmin}+';'">
+          <i class="material-icons">settings</i>
+        </a>
+        <a class="navBT" href="/logout">
+          <i class="material-icons">close</i>
+        </a>
+        <h2 class="username" th:text="'User: '+${username}"></h2>
+      </div>
+    </nav>
