@@ -23,32 +23,33 @@ public class StorageOperation
     private LogStorageRepository logRepo;
 
     /**
-     * Anade un storage.
+     * Add a storage.
      * @param ip
      * @param space
      * @param bandwidth
-     * @param user
-     * Usuario empleado en el enlace de claves, no se guarda
-     * @param pass
-     * Password de dicho usuario, no se guarda
-     * @return
-     * Storage creado, null si no ha sido posible.
+     * @param user User for the ssh keys, not save
+     * @param pass Password of the user, not save
+     * @return Storage created, null if not
      */
     public Storage addStorage(String ip, int space, int bandwidth, String user, String pass)
     {
-        Optional<Storage> tmp = stRepo.findByIp(ip);
-        if(!tmp.isEmpty())
-            return null;
-        //Solicita al servicio interno el enlace de claves
-        return stRepo.save(new Storage(ip, space, bandwidth));
+        Storage tmp = null;
+        try
+        {
+            tmp = stRepo.save(new Storage(ip, space, bandwidth));
+            //Solicita al servicio interno el enlace de claves
+        }
+        catch(Exception e)
+        {
+            tmp = null;
+        }
+        return tmp;
     }
 
     /**
-     * Borra si esta libre (no hay vms usandolo...) un storage.
+     * Remove a storage if are empty (no vdisks, no targets/pools)
      * @param stg
-     * Storage a borrar.
-     * @return
-     * True si ha sido posible borrarlo, false si tiene pool o vdisks
+     * @return True if are removed, false if have vdisks or pools
      */
     public boolean removeStorage(Storage stg)
     {
@@ -59,10 +60,9 @@ public class StorageOperation
     }
 
     /**
-     * Obtiene un storage por su ip
-     * @param ip
-     * @return
-     * Null si no existe
+     * Get a sotrage by address
+     * @param ip address
+     * @return Null if not exist
      */
     public Storage getStorage(String ip)
     {
@@ -73,44 +73,34 @@ public class StorageOperation
     }
 
     /**
-     * Actualiza un storage.
-     * @param stg
-     * Storage a actualizar.
-     */
-    public void updateStorage(Storage stg)
-    {
-        stRepo.save(stg);
-    }
-
-    /**
-     * Solicita al servicio interno que compruebe el estado del storage.
+     * Request to internal service check the state of the storage. Lock operation
      * @param stg
      */
     public void checkStatus(Storage stg)
     {}
 
     /**
-     * Habilita el modo mantenimiento del storage.
+     * Enable the maintenance status over the storage
      * @param stg
      */
     public void maintenance(Storage stg)
     {
         stg.status=StatusHost.MAINTENANCE;
-        updateStorage(stg);
+        stRepo.save(stg);
     }
 
     /**
-     * Cierra el storage, no permite asignar nuevos discos.
+     * Close the storage. No more vdisks.
      * @param stg
      */
     public void lock(Storage stg)
     {
         stg.status=StatusHost.CLOSE;
-        updateStorage(stg);
+        stRepo.save(stg);
     }
 
     /**
-     * Retorna el estado del storage a lo mas perfecto que el se encuentre.
+     * Change the state of the host to the best state is possible
      * @param stg
      */
     public void clear(Storage stg)
@@ -125,21 +115,9 @@ public class StorageOperation
     }
 
     /**
-     * Expulsa a todos los discos a otros storage, si no los hubiera, espera a que aparezca un hueco.
-     * EXPERIMENTAL. NO IMPLEMENTADO.
-     * @param stg
-     */
-    public void expulse(Storage stg)
-    {}
-
-    /**
-     * Crea el espacio de conexiones de una vm (una pool) mediante el servicio interno.
-     * @param vm
-     * Vm sin pool previamente creada.
-     * @param space
-     * Espacio estimado requerido
-     * @return
-     * Pool definida para esa vm.
+     * Make the space of connections to vdisks for a vm (a pool) with the internal service
+     * @param vm Vm without pool
+     * @return Pool for this vm.
      */
     public Pool createTarget(VM vm)
     {
@@ -155,7 +133,7 @@ public class StorageOperation
     }
 
     /**
-     * Borra el espacio de conexiones de una pool.
+     * Remove the space of connections (a pool) with the internal service
      * @param pol
      */
     public void deleteTarget(Pool pol)
@@ -166,36 +144,40 @@ public class StorageOperation
     }
 
     /**
-     * Crea un disco en el storage.
-     * @param vd
-     * Disco con las especificaciones.
+     * Create a vidsk in a storage
+     * @param pool Pool owner of the vdisk
+     * @param space Space of the disk in GiB
+     * @return True if have been create
      */
     public boolean createDisk(Pool pool, int space)
     {
+        if(pool == null)
+            return false;
         String initiator = "iqn.2022-08.server.domain:initiator-"+(int)(Math.random()*1000); //Solicitar al servicio interno
         Storage stg = findFreeStorage(space);
         if(stg!=null)
         {
             vdRepo.save(new Vdisk(pool, stg, space, initiator));
-            polRepo.save(pool); //El constructor de vdisk, modifica la pool
+            polRepo.save(pool); //The constructor modify the pool
             return true;
         }
         return false;
     }
 
     /**
-     * Borra un disco, de forma irrecuperable.
+     * Delete vdisk
      * @param vd
      */
     public void deleteDisk(Vdisk vd)
     {
         //La vm tiene que estar apagada, eso lo dice el servicio interno
         //Servicio interno borra el disco
-        vdRepo.delete(vd);
+        if(vd != null)
+            vdRepo.delete(vd);
     }
 
     /**
-     * Busca un storage con espacio libre suficiente
+     * Search a storage with enough space
      * @param space
      * @return
      */
@@ -229,7 +211,7 @@ public class StorageOperation
     }
 
     /**
-     * Rotorna todo el log de un storage
+     * Return all log of a storage
      * @param storage
      * @return
      */
@@ -239,10 +221,9 @@ public class StorageOperation
     }
 
     /**
-     * Retorna los ultimos logs de un storage especificado (indicados por parametro)
+     * Return the last log of a storage
      * @param storage
-     * @param lasts
-     * los n ultimos logs
+     * @param lasts last n logs
      * @return
      */
     public List<LogStorage> getLog(Storage storage, int lasts)
@@ -251,10 +232,9 @@ public class StorageOperation
     }
 
     /**
-     * Retorna todos los logs de un storage posteriores a una fecha
+     * Return all log of a storage after a date
      * @param storage
-     * @param at
-     * de esta fecha en adelante son los logs solicitados
+     * @param at The log after this date
      * @return
      */
     public List<LogStorage> getLog(Storage storage, Date at)
@@ -265,7 +245,7 @@ public class StorageOperation
     }
 
     /**
-     * Rotorna todo el log de todos los storages
+     * Return all log of all storages
      * @return
      */
     public List<LogStorage> getLog()
@@ -274,9 +254,8 @@ public class StorageOperation
     }
 
     /**
-     * Retorna todos los logs posteriores a una fecha
-     * @param at
-     * de esta fecha en adelante son los logs solicitados
+     * Return all log of all storages after a date
+     * @param at The log after this date
      * @return
      */
     public List<LogStorage> getLog(Date at)
@@ -286,12 +265,29 @@ public class StorageOperation
         return tmp;
     }
 
+    /**
+     * Change the address of a storage
+     * @param storage
+     * @param ip The new address
+     */
     public void updateIp(Storage storage, String ip)
     {
         storage.ip=ip;
-        stRepo.save(storage);
+        try
+        {
+            stRepo.save(storage); //This attribute are protected by the db
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Change the space of a storage if it more than use
+     * @param storage
+     * @param space The new space
+     */
     public void updateSpace(Storage storage, int space)
     {
         if(space<(storage.space-storage.getFreeSpace()))
@@ -300,6 +296,10 @@ public class StorageOperation
         stRepo.save(storage);
     }
 
+    /**
+     * Return all free space in all storages (the sum)
+     * @return
+     */
     public int spaceFreeInAll()
     {
         int total = 0;
