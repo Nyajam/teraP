@@ -50,5 +50,9 @@ For bugs I have this [github](https://github.com/Nyajam/teraP) of the project, b
 - David Álvarez Boyero
 - Jorge Diaz
 - Área de Biodiversidad y Conservación de la URJC
+    - Marcos Méndez
+    - Luis Cayuela
+    - Miguel Ángel Olalla
+    - Alfredo García Fernandez
     - José María Iriondo Alegría
     - Carlos Lara

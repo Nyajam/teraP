@@ -116,7 +116,7 @@ public class VhostsOperation
     {
         //Notifica al servicio interno cambios en este host
         vh.status=StatusHost.CLOSE;
-        updateVhost(vh);
+        vhRepo.save(vh);
     }
 
     /**
@@ -264,7 +264,7 @@ public class VhostsOperation
     }
 
     /**
-     * Return the last logs of a host
+     * Return the last log of a host
      * @param vhost
      * @param lasts The last n logs
      * @return
@@ -275,9 +275,9 @@ public class VhostsOperation
     }
 
     /**
-     * Return all logs of a host before of a date
+     * Return all log of a host after of a date
      * @param vhost
-     * @param at The logs are after this date
+     * @param at The log are after this date
      * @return
      */
     public List<LogHost> getLog(Vhost vhost, Date at)
@@ -288,7 +288,7 @@ public class VhostsOperation
     }
 
     /**
-     * Return all logs of all hosts
+     * Return all log of all hosts
      * @return
      */
     public List<LogHost> getLog()
@@ -297,8 +297,8 @@ public class VhostsOperation
     }
 
     /**
-     * Return all logs of all hosts before of a date
-     * @param at The logs are after this date
+     * Return all log of all hosts before of a date
+     * @param at The log are after this date
      * @return
      */
     public List<LogHost> getLog(Date at)
