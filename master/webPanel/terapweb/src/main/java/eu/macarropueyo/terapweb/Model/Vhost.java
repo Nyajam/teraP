@@ -190,6 +190,6 @@ public class Vhost
             cores = cores + vm.cores;
             memory = memory + vm.mem;
         }
-        return ((cores/this.cores)+(memory/this.mem)) / 2;
+        return ((cores/(double)this.cores)+(memory/(double)this.mem)) / 2.0;
     }
 }

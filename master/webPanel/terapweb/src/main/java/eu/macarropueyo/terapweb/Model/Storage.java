@@ -96,7 +96,7 @@ public class Storage
      */
     public double ratio()
     {
-        return (this.space-getFreeSpace())/this.space;
+        return ((this.space-getFreeSpace()) / (double)this.space);
     }
 
     /**
