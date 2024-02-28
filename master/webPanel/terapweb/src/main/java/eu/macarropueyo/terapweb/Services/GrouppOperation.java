@@ -238,4 +238,10 @@ public class GrouppOperation
         group.maxdisk = disk;
         grpRepo.save(group);
     }
+
+    public void updateOwner(Groupp group, User newOwner)
+    {
+        group.user = newOwner;
+        grpRepo.save(group);
+    }
 }

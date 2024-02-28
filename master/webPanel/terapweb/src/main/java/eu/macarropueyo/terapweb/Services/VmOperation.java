@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import eu.macarropueyo.terapweb.Model.*;
 import eu.macarropueyo.terapweb.Repository.DiskExpansionRepository;
 import eu.macarropueyo.terapweb.Repository.PoolRepository;
-import eu.macarropueyo.terapweb.Repository.VhostRepository;
 import eu.macarropueyo.terapweb.Repository.VmRepository;
 
 @Component
@@ -32,15 +31,13 @@ public class VmOperation
 
     /**
      * Crea una vm sin definir, sin asignar
-     * @param group
-     * Grupo que crea la vm
+     * @param group Grupo que crea la vm
      * @param name
      * @param cores
      * @param freq
      * @param mem
      * @param space
-     * @return
-     * Vm creada
+     * @return Vm creada
      */
     public VM newVM(Groupp group, String name, int cores, int freq, int mem, int space)
     {
@@ -116,16 +113,17 @@ public class VmOperation
      * Define una vm en un vhost
      * @param vm
      */
-    public void define(VM vm, int space)
+    public boolean define(VM vm, int space)
     {
         Vhost host = vhop.findFreeVhost(vm);
         if(host==null)
-            return;
+            return false;
         Pool pool = stgop.createTarget(vm);
         stgop.createDisk(pool, space);
         String definition = "<KVM>"; //Solicitar al servicio interno
         vm.setDefinition(host, pool, definition);
         vmRepo.save(vm);
+        return true;
     }
 
     /**
@@ -182,13 +180,10 @@ public class VmOperation
 
     public void acceptDisExpansion(long id)
     {
-
         Optional<DiskExpansion> tmp = deRepo.findById(id);
         if(tmp.isPresent())
-        {
-            stgop.createDisk(tmp.get().vm.pool, tmp.get().expansion);
-            deRepo.delete(tmp.get());
-        }
+            if(stgop.createDisk(tmp.get().vm.pool, tmp.get().expansion))
+                deRepo.delete(tmp.get());
     }
 
     public List<VM> getAllVms()
@@ -204,4 +199,13 @@ public class VmOperation
      */
     public void remake(VM vm)
     {}
+
+    /**
+     * Return the number of VMs in the cluster
+     * @return
+     */
+    public int numberOfVMs()
+    {
+        return (int)vmRepo.count();
+    }
 }

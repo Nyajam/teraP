@@ -1,3 +1,4 @@
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!--Library for graphics-->
 <script type="text/javascript" th:inline="javascript">
 
     //Notificaciones del systema
@@ -82,5 +83,61 @@
     function viewMembersOfGroup(grupo)
     {
         //Buscar el grupo y moverlo a la tabla de vision de grupos
+        var table = document.getElementById("groupMembers");
+        var users = document.getElementById(grupo);
+        var owner = users.children[0].textContent;
+
+        while (table.rows.length > 0)
+            table.deleteRow(0);
+
+        if(users.children.length == 1)
+        {
+            var row = table.insertRow(0);
+            var cell = row.insertCell();
+            cell.innerHTML = "None";
+        }
+
+        for (var i = 0; i<users.children.length; i++)
+        {
+            var name = users.children[i+1].textContent;
+            var row = table.insertRow(i);
+            var cell = row.insertCell();
+            cell.innerHTML = name;
+            var cell = row.insertCell(1);
+            cell.innerHTML = '<form method="post"> <input type="hidden" name="name" value="'+owner+'"> <input type="hidden" name="value" value="'+name+'"> <input type="submit" name="field" value="EXPULSE" style="color: red;"></form>';
+        }
+    }
+
+    function generateGraph(title, elements, values, type, orientation, box)
+    {
+        const layout = {title: title};
+        const data = [{
+            y:elements,
+            x:values,
+            values:elements,
+            labels:values,
+            type:type,
+            hole:.55,
+            orientation:orientation, //h
+            marker: {color:"#74b1ff"}
+        }];
+        Plotly.newPlot(box, data, layout);
+    }
+
+    function getDataToGraphics(data, name, position, graph, orientation)
+    {
+        //Plotly.js  https://www.w3schools.com/js/js_graphics_plotly.asp
+        var root = document.getElementById(data);
+        var elements = [];
+        var values = [];
+        for(var i = 0; i<root.children.length; i++)
+        {
+            values[i] = root.children[i].getAttribute('value');
+            elements[i] = root.children[i].textContent;
+        }
+        if(orientation == "h")
+            generateGraph(name , elements, values, graph, orientation, position);
+        if(orientation == "v")
+            generateGraph(name , values, elements, graph, orientation, position);
     }
 </script>

@@ -307,4 +307,25 @@ public class StorageOperation
             total = total + stg.getFreeSpace();
         return total;
     }
+
+    /**
+     * Return all space in all storages (the sum)
+     * @return
+     */
+    public int spaceInAll()
+    {
+        int total = 0;
+        for (Storage stg : stRepo.findAll())
+            total = total + stg.space;
+        return total;
+    }
+
+    /**
+     * Return how many vdisk are in the cluster.
+     * @return
+     */
+    public int numberOfVdisks()
+    {
+        return (int)vdRepo.count();
+    }
 }

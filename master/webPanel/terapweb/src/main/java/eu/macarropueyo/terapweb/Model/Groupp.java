@@ -121,4 +121,13 @@ public class Groupp
         tmp.removeIf(a -> a.status.isVoid());
         return tmp;
     }
+
+    /**
+     * Says if this group its a general group or a personal group.
+     * @return True if is a personal group
+     */
+    public boolean personalArea()
+    {
+        return this.user.myGroup.equals(this);
+    }
 }

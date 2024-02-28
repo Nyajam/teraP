@@ -49,4 +49,9 @@ public enum StatusHost
     {
         return this.equals(StatusHost.OK)||this.equals(StatusHost.ATENTION)||this.equals(StatusHost.FAIL);
     }
+
+    public boolean needAtention()
+    {
+        return this.equals(StatusHost.ATENTION)||this.equals(StatusHost.CRITIC)||this.equals(StatusHost.FAIL);
+    }
 }
