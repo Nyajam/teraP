@@ -21,9 +21,33 @@ public class SystemOperation
      * Boton nuclear, guarda el estado de las vm y se prepara para emergencia inminente.
      * @param vh
      */
-    public void nuke(Vhost vh)
+    public void nuke()
     {
-        //vh.status=StatusHost
+        Optional <SystemValues> tmp = sysRepo.findById("nuke"); //Recordar de la variable de estado es 'nuke' y los estados ARMED y LAUNCH
+        if(tmp.isPresent())
+        {
+            if("ARMED".equals(tmp.get().value))
+            {
+                tmp.get().value = "LAUNCH";
+                sysRepo.save(tmp.get());
+                //Servicio interno
+            }
+            else
+            {
+                tmp.get().value = "ARMED";
+                sysRepo.save(tmp.get());
+                //Servicio interno
+            }
+        }
+    }
+
+    /**
+     * True is an emergency
+     * @return
+     */
+    public boolean isNuke()
+    {
+        return "LAUNCH".equals(getSystemValue("nuke"));
     }
 
     /**

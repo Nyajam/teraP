@@ -18,6 +18,7 @@ import eu.macarropueyo.terapweb.Model.VM;
 import eu.macarropueyo.terapweb.Model.Vdisk;
 import eu.macarropueyo.terapweb.Services.GrouppOperation;
 import eu.macarropueyo.terapweb.Services.StorageOperation;
+import eu.macarropueyo.terapweb.Services.SystemOperation;
 import eu.macarropueyo.terapweb.Services.UserOperation;
 import eu.macarropueyo.terapweb.Services.VhostsOperation;
 import eu.macarropueyo.terapweb.Services.VmOperation;
@@ -35,6 +36,8 @@ public class ControllerHome
     private VhostsOperation vhop;
     @Autowired
     private StorageOperation stgop;
+    @Autowired
+    private SystemOperation sysop;
     
 
     @RequestMapping("/home") //Sirve a "My VMs"
@@ -275,12 +278,19 @@ public class ControllerHome
     {
         modelo.addAttribute("userAcces",sesion.getUserPrincipal()!=null);
         modelo.addAttribute("username",sesion.getUserPrincipal().getName());
-        modelo.addAttribute("title","teraP");
-        modelo.addAttribute("generalPageDescription","Plataforma de virtualización en cluster");
-        modelo.addAttribute("logoUrl","https://estaticos.muyinteresante.es/media/cache/1140x_thumb/uploads/images/gallery/59c4f5655bafe82c692a7052/gato-marron_0.jpg");
         modelo.addAttribute("pageName","Home");
         modelo.addAttribute("colorBhome","grey");
         modelo.addAttribute("admP", useop.getUser(sesion.getUserPrincipal().getName()).isRoot()); //Si es admin
+
+        //Specifics of the web
+        modelo.addAttribute("title", sysop.getSystemValue("title"));
+        modelo.addAttribute("generalPageDescription", sysop.getSystemValue("generalPageDescription"));
+        modelo.addAttribute("logoUrl", sysop.getSystemValue("logoUrl"));
+        modelo.addAttribute("colorHead", sysop.getSystemValue("colorHead"));
+        modelo.addAttribute("colorBox", sysop.getSystemValue("colorBox"));
+        modelo.addAttribute("colorBTN", sysop.getSystemValue("colorBTN"));
+        modelo.addAttribute("colorBackground", sysop.getSystemValue("colorBackground"));
+        modelo.addAttribute("colorTags", sysop.getSystemValue("colorTags"));
 
         List<String[]> sections = new LinkedList<>();
         sections.add(new String[]{"Global","/home"});

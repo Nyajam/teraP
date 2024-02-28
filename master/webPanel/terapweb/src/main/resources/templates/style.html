@@ -1,4 +1,4 @@
-	<style>
+	<style th:inline="css">
 	@font-face
 	{
 		/*https://www.w3schools.com/icons/google_icons_file.asp*/
@@ -20,15 +20,14 @@
 		white-space: nowrap;
 		word-wrap: normal;
 		direction: ltr;
-		-moz-font-feature-settings: 'liga';
-		-moz-osx-font-smoothing: grayscale;
-			color: black;
+		/*-moz-font-feature-settings: 'liga';
+		-moz-osx-font-smoothing: grayscale;*/
+		color: black;
 	}
 	html,body
 	{
-		background: white;
 		font-family: sans-serif;
-		background-color: white;
+		background-color: /*[(${colorBackground})]*/ white;
 		width: 100%;
 		margin: 0;
 	}
@@ -36,13 +35,13 @@
 	{
 		/*margin: 15px;*/
 		text-align: left;
-		background-color: #74b1ff;
+		background-color: /*[(${colorHead})]*/ #74b1ff;
 		float: left;
 		width: 100%;
 	}
 	nav
 	{
-		background-color: #74b1ff;
+		background-color: /*[(${colorHead})]*/ #74b1ff;
 		width: 100%;
 		display: inline-flex;
 		/*position: fixed;*/
@@ -108,7 +107,7 @@
 	{
 		width: 100%;
 		display: inline-flex;
-		background-color: grey;
+		background-color: /*[(${colorTags})]*/ grey;
 		top: auto;
 		height: 40px;
 		overflow: auto;
@@ -172,7 +171,7 @@
 	}
 	.nbtn
 	{
-		background-color: darkgray;
+		background-color: /*[(${colorBTN})]*/ darkgray;
 		display: inline-block;
 		padding: 6px 12px;
 		font-size: small;
@@ -188,7 +187,7 @@
 	}
 	.floatsBlocks
 	{
-		background-color: lightsteelblue;
+		background-color: /*[(${colorBox})]*/ lightsteelblue;
 		border-radius: 10px;
 		padding: 1%;
 		margin: 1%;
