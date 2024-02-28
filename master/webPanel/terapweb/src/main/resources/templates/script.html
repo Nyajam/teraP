@@ -140,4 +140,21 @@
         if(orientation == "v")
             generateGraph(name , values, elements, graph, orientation, position);
     }
+
+    function checkTwicePassword(pass1, pass2)
+    {
+        var p1 = document.getElementById(pass1);
+        var p2 = document.getElementById(pass2);
+        p1 = p1.value;
+        p2 = p2.value;
+        if(p1.length < 8 || !(p1.match(/[a-z]/) && p1.match(/[A-Z]/)) || !p1.match(/\d/) || !p1.match(/[^a-zA-Z\d]/))
+        {
+            alert('The password need minimun 8 characters, upper and lower letters, a number, a special character');
+            return false;
+        }
+        if(p1 == p2)
+            return true;
+        alert('The both passwords are not the same.');
+        return false;
+    }
 </script>

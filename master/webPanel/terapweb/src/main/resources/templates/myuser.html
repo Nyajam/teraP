@@ -2,34 +2,59 @@
 <aside>
     <div class="align-left">
       <h3 th:text="${pageName}"></h3>
-      <button onclick="centrarSection('request')">My request</button>
-      <button onclick="alert('hola')">Virtual Machines</button>
-      <button onclick="alert('hola')">Set cluster</button>
+      <th:block th:each="Nsection : ${sections}">
+        <a class="nbtn" th:href="${Nsection[1]}" th:utext="${Nsection[0]}"></a>
+      </th:block>
     </div>
   </aside>
   <section class="section" id="request">
     <article id="tags">
       <div class="align-left"></div>
-      <button onclick="centrarTag('request','tag1')">Page 1</button>
-      <button onclick="centrarTag('request','tag2')">Page 2</button>
-      <button onclick="centrarTag('request','tag3')">Page 3</button>
-      <button onclick="centrarTag('request','tag4')">Page 4</button>
-      <button onclick="centrarTag('request','tag5')">Page 5</button>
+      <th:block th:each="Ntag : ${tags}">
+        <button type="button" th:utext="${Ntag[0]}" th:attr="onclick=|centrarTag('${Ntag[0]}')|"></button>
+      </th:block>
     </article>
-    <article style="display: block;" name="tag1" class="tagPages">
-      <p>Page 1</p>
-    </article>
-    <article style="display: none;" name="tag2" class="tagPages">
-      <p>Page 2</p>
-    </article>
-    <article style="display: none;" name="tag3" class="tagPages">
-      <p>Page 3</p>
-    </article>
-    <article style="display: none;" name="tag4" class="tagPages">
-      <p>Page 4</p>
-    </article>
-    <article style="display: none;" name="tag5" class="tagPages">
-      <p>Page 5</p>
-    </article>
+    <th:block th:each="Ntag : ${tags}">
+      <article style="display: block;" th:attr="name=|${Ntag[0]}|" class="tagPages"><!--Secciones o paginas sin recarga-->
+        <h2 th:utext="${Ntag[0]}"></h2>
+        <div th:if="${Ntag[1]}=='0'" class="pageTag"> <!--Lista de todas las requests-->
+          <div class="floatsBlocks">
+            <h3>View and modify my data</h3>
+            <p th:utext="|Name: ${username}|"></p>
+            <p th:utext="|Email: ${usermail}|"></p>
+            <p>
+              <form action="/myuser" method="post" onsubmit='return checkTwicePassword("passwordCheck1", "passwordCheck2")'>
+                Change password (write twice):
+                <br>
+                <input id="passwordCheck1" type="password" name="value">
+                <br>
+                <input id="passwordCheck2" type="password">
+                <br>
+                <input type="submit" value="change password" name="changePass">
+              </form>
+            </p>
+            <p>
+              <form action="/myuser" method="post">
+                Change email:
+                <br>
+                <input type="email" name="value">
+                <br>
+                <input type="submit" value="change email" name="changeMail">
+              </form>
+              <form action="/myuser" method="post">
+                <input type="submit" value="Send test email" name="sendMe">
+              </form>
+            </p>
+          </div>
+          <div class="floatsBlocks">
+            <h3>View my limits (total)</h3>
+            <p th:utext="|Max numer of VMs: ${nVms}|"></p>
+            <p th:utext="|Max numer of cores: ${nCores}|"></p>
+            <p th:utext="|Max numer of memory: ${nMem} GB|"></p>
+            <p th:utext="|Max numer of disk: ${nDisk} GB|"></p>
+          </div>
+        </div>
+      </article>
+    </th:block>
   </section>
   <div th:replace= "foot"></div>
