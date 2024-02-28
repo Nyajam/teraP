@@ -1,6 +1,5 @@
 package eu.macarropueyo.terapweb.Controller;
 
-import eu.macarropueyo.terapweb.Repository.*;
 import eu.macarropueyo.terapweb.Services.*;
 import eu.macarropueyo.terapweb.Model.*;
 
@@ -9,26 +8,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class MainController
 {
     @Autowired
-	private  GroupRepository repo;
+    private UserOperation usop;
     @Autowired
-    private StorageOperation tmp; //para test!!
-    @Autowired
-    private UserOperation nya; //para test!!
-    @Autowired
-    private VmOperation tmp2; //para test!!
+    private SystemOperation sysop;
 
-    @RequestMapping("/test")
+    @RequestMapping("/start")
     public String test(Model modelo, HttpServletRequest sesion)
     {
-        //Storage stg = tmp.getStorage("2");
-        //VM vm = nya.getUser("ilde").myGroup.vms.get(0);
-        //tmp.createTarget(vm);
+        if(sysop.getSystemValue("start").length() > 0)
+            return "empty";
+        User tmp = usop.addUser("admin", "admin@localhost");
+        usop.grantAdm(tmp);
+        usop.updatePassword(tmp, "123456789");
+        sysop.setSystemValue("nuke", "ARMED");
+        sysop.setSystemValue("title", "teraP");
+        sysop.setSystemValue("generalPageDescription", "Plataforma de virtualización en cluster");
+        sysop.setSystemValue("logoUrl", "https://static.nationalgeographic.es/files/styles/image_3200/public/75552.ngsversion.1422285553360.webp?w=1600&h=1067");
+        sysop.setSystemValue("colorHead", "#74b1ff");
+        sysop.setSystemValue("colorBox", "lightsteelblue");
+        sysop.setSystemValue("colorBTN", "darkgray");
+        sysop.setSystemValue("colorBackground", "white");
+        sysop.setSystemValue("colorTags", "grey");
         return "empty";
     }
 
@@ -43,10 +48,16 @@ public class MainController
         else
             modelo.addAttribute("userAcces",false);
         modelo.addAttribute("errorBox",false);
-        modelo.addAttribute("title","teraP");
-        modelo.addAttribute("generalPageDescription","Plataforma de virtualización en cluster");
-        modelo.addAttribute("logoUrl","https://estaticos.muyinteresante.es/media/cache/1140x_thumb/uploads/images/gallery/59c4f5655bafe82c692a7052/gato-marron_0.jpg");
         modelo.addAttribute("pageName","Login");
+
+        modelo.addAttribute("title", sysop.getSystemValue("title"));
+        modelo.addAttribute("generalPageDescription", sysop.getSystemValue("generalPageDescription"));
+        modelo.addAttribute("logoUrl", sysop.getSystemValue("logoUrl"));
+        modelo.addAttribute("colorHead", sysop.getSystemValue("colorHead"));
+        modelo.addAttribute("colorBox", sysop.getSystemValue("colorBox"));
+        modelo.addAttribute("colorBTN", sysop.getSystemValue("colorBTN"));
+        modelo.addAttribute("colorBackground", sysop.getSystemValue("colorBackground"));
+        modelo.addAttribute("colorTags", sysop.getSystemValue("colorTags"));
         return "index";
     }
 
@@ -61,10 +72,16 @@ public class MainController
         else
             modelo.addAttribute("userAcces",false);
         modelo.addAttribute("errorBox",true);
-        modelo.addAttribute("title","teraP");
-        modelo.addAttribute("generalPageDescription","Plataforma de virtualización en cluster");
-        modelo.addAttribute("logoUrl","https://estaticos.muyinteresante.es/media/cache/1140x_thumb/uploads/images/gallery/59c4f5655bafe82c692a7052/gato-marron_0.jpg");
         modelo.addAttribute("pageName","Login");
+
+        modelo.addAttribute("title", sysop.getSystemValue("title"));
+        modelo.addAttribute("generalPageDescription", sysop.getSystemValue("generalPageDescription"));
+        modelo.addAttribute("logoUrl", sysop.getSystemValue("logoUrl"));
+        modelo.addAttribute("colorHead", sysop.getSystemValue("colorHead"));
+        modelo.addAttribute("colorBox", sysop.getSystemValue("colorBox"));
+        modelo.addAttribute("colorBTN", sysop.getSystemValue("colorBTN"));
+        modelo.addAttribute("colorBackground", sysop.getSystemValue("colorBackground"));
+        modelo.addAttribute("colorTags", sysop.getSystemValue("colorTags"));
         return "index";
     }
 }
