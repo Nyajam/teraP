@@ -28,7 +28,7 @@ public class MainController
         sysop.setSystemValue("nuke", "ARMED");
         sysop.setSystemValue("title", "teraP");
         sysop.setSystemValue("generalPageDescription", "Plataforma de virtualización en cluster");
-        sysop.setSystemValue("logoUrl", "https://github.com/Nyajam/teraP/blob/main/images/logo.png");
+        sysop.setSystemValue("logoUrl", "https://raw.githubusercontent.com/Nyajam/teraP/main/images/logo.png");
         sysop.setSystemValue("colorHead", "#74b1ff");
         sysop.setSystemValue("colorBox", "lightsteelblue");
         sysop.setSystemValue("colorBTN", "darkgray");
