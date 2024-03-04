@@ -1,8 +1,10 @@
 # teraP
 
 Software for manage private cloud.
+<img src="images/logo.png" alt="teraP logo" style="width:64px;"/>
 
-*This readme is provisional. And the logo is being thought.*
+
+*This readme is provisional.*
 
 ## About
 
