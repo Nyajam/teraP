@@ -1,0 +1,16 @@
+<div th:replace= "head"></div>
+<aside>
+    <div class="align-left">
+      <h3 th:text="${pageName}"></h3>
+      <th:block th:each="helpLink : ${helps}">
+        <a class="nbtn" th:href="|/help/${helpLink.name}|" th:utext="${helpLink.name}"></a>
+      </th:block>
+    </div>
+  </aside>
+  <section class="section" id="request">
+    <article id="tags">
+      <div class="align-left"></div>
+    </article>
+    <iframe th:src="${framePage}" class="tagPages"></iframe>
+  </section>
+  <div th:replace= "foot"></div>

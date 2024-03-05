@@ -2,10 +2,13 @@ package eu.macarropueyo.terapweb.Services;
 
 import java.util.Optional;
 import java.util.Random;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import eu.macarropueyo.terapweb.Repository.HelpRowsRepository;
 import eu.macarropueyo.terapweb.Repository.SystemRepository;
 import eu.macarropueyo.terapweb.Model.*;
 
@@ -17,6 +20,9 @@ public class SystemOperation
 {
     @Autowired
     SystemRepository sysRepo;
+    @Autowired
+    HelpRowsRepository helpRepo;
+
     /**
      * Boton nuclear, guarda el estado de las vm y se prepara para emergencia inminente.
      * @param vh
@@ -77,7 +83,7 @@ public class SystemOperation
         return "";
     }
 
-    public void setSystemValue(String key, String value)
+    public void setSystemValue(@NonNull String key, String value)
     {
         Optional<SystemValues> tmp = sysRepo.findById(key);
         if(tmp.isPresent())
@@ -105,4 +111,52 @@ public class SystemOperation
      */
     public void sendMail(String address, String message)
     {}
+
+    /**
+     * Return all links of help
+     * @return
+     */
+    public List<HelpRows> getAllHelpLinks()
+    {
+        return helpRepo.findAll();
+    }
+
+    /**
+     * Remove a help link.
+     * @param link cant be null or it name or link
+     */
+    public void removeHelpLink(HelpRows link)
+    {
+        if(link == null)
+            return;
+        if(link.name != null && link.link != null)
+            helpRepo.delete(link);
+    }
+
+    /**
+     * Add or update help link.
+     * @param link cant be null or it name or link
+     */
+    public void addHelpLink(HelpRows link)
+    {
+        if(link == null)
+            return;
+        if(link.name != null && link.link != null)
+            helpRepo.save(link);
+    }
+
+    /**
+     * Return a help link with a name
+     * @param name Name of the help link
+     * @return HelpRows with the link, null if not exist
+     */
+    public HelpRows getHelpLink(String name)
+    {
+        if(name == null)
+            return null;
+        Optional<HelpRows> tmp = helpRepo.findByName(name);
+        if(tmp.isPresent())
+            return tmp.get();
+        return null;
+    }
 }
