@@ -313,7 +313,6 @@ public class ControllerHome
                 tags.add(new String[]{"My_requests", "104"}); //Formulario para realizar la peticion de recurso y lista DE MIS solicitudes, se pueden anular y no incluye las concedidas
                 tags.add(new String[]{"Share", "105"}); //Lista de usuarios que pueden acceder a mis VMs y peticiones pendientes
                 tags.add(new String[]{"My_VMs", "106"}); //Son las peticiones concedidas convertidas en VMs o recursos
-                tags.add(new String[]{"VMs_Monitor", "107"}); //Monitor vnc web de acceso a una vm
                 break;
             case 2: //My Groups, solo la lista de mis grupos
                 tags.add(new String[]{"List_of_my_groups", "110"}); //Lista de grupos a los que pertence el usuario
@@ -322,7 +321,6 @@ public class ControllerHome
                 tags.add(new String[]{"List_of_my_groups", "110"}); //Lista de grupos a los que pertence el usuario
                 tags.add(new String[]{"Manage_my_group", "111"}); //Solo admins, dispone de la lista de usuarios (puede expulsar), la lista de peticiones de usuario (aceptar o rechazar), la lista de solicitudes de VMs (puede cancelarlas) y el formulario de nuevas VMs
                 tags.add(new String[]{"VMs_of_group", "106"}); //Dispone de la lista de VMs del grupo y permite controlarlas (excepto eliminar o expandir, salvo que sea el responsable, ampliar la tabla)
-                tags.add(new String[]{"VMs_Monitor", "107"}); //Monitor vnc web de acceso a una vm
                 break;
             case 4: //My Groups, igual que el caso 3, pero para usuarios no administradores del grupo
                 tags.add(new String[]{"List_of_my_groups", "110"}); //Lista de grupos a los que pertence el usuario

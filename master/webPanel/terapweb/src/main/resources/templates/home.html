@@ -170,7 +170,7 @@
                     <td th:utext="${vme.space}"></td>
                     <td>
                       <input type="hidden" th:value="${vme.uuid}" id="uuid">
-                      <input type="button" name="operation" value="Connect" style="color: green;" th:onclick="document.getElementsByName('vncScreen')[0].src=[[${vme.conection}]]">
+                      <input type="button" name="operation" value="Connect" style="color: green;" th:onclick="window.open(url='[(${vme.token})]','','menubar=0')">
                       <input type="button" name="operation" value="Start" onclick="vmExecute('Start')">
                       <input type="button" name="operation" value="Shutdown" onclick="vmExecute('Shutdown')">
                       <input type="button" name="operation" value="ForceShutdown" onclick="vmExecute('ForceShutdown')">
@@ -185,11 +185,6 @@
               </tbody>
               </table>
           </div>
-        </div>
-
-        <div th:if="${Ntag[1]}=='107'" class="pageTag"> <!--Monitor VNC-->
-          <!-- novnc_proxy --listen 6080 --vnc localhost:5900 -->
-          <iframe style="width: 100%;" name="vncScreen" onload="this.style.height = (document.getElementsByClassName('tagPages')[2].clientHeight-29) + 'px';"></iframe>
         </div>
 
         <div th:if="${Ntag[1]}=='110'" class="pageTag"> <!--Lista de los grupos del usuario y acceso a estos-->

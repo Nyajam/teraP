@@ -61,7 +61,7 @@ public class VmOperation
      */
     public void shutdown(VM vm)
     {
-        vm.token="";
+        vm.token=""; //temporal, es tarea del servicio interno definir el token
         vmRepo.save(vm);
     }
 
@@ -71,7 +71,7 @@ public class VmOperation
      */
     public void shutdownNow(VM vm)
     {
-        vm.token="";
+        vm.token=""; //temporal, es tarea del servicio interno definir el token
         vmRepo.save(vm);
     }
 
@@ -88,7 +88,7 @@ public class VmOperation
      */
     public void start(VM vm)
     {
-        vm.token="trololo";
+        vm.token = "http://"+vm.host.ip+":"+vm.port; //temporal, es tarea del servicio interno definir el token
         vmRepo.save(vm);
     }
 

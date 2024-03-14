@@ -192,15 +192,6 @@ public class VM
     }
 
     /**
-     * Genera una url de conexion a la VM
-     * @return
-     */
-    public String getConection()
-    {
-        return "http://"+this.host.ip+":"+this.port;
-    }
-
-    /**
      * Comprueba si esta vm es de este usuario (puede operarla)
      * @param user
      * @return
