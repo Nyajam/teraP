@@ -47,6 +47,10 @@ public class Storage
      * Estado del storage
      */
     public StatusHost status;
+    /**
+     * Usuario de acceso al storage
+     */
+    public String user;
 
     /**
      * Por imperativo de Spring.
@@ -60,13 +64,14 @@ public class Storage
      * @param space
      * @param bandwidth
      */
-    public Storage(String ip, int space, int bandwidth)
+    public Storage(String ip, int space, int bandwidth, String user)
     {
         this.vdisks=new LinkedList<>();
         this.ip=ip;
         this.space=space;
         this.bandwidth=bandwidth;
         this.status=StatusHost.CLOSE;
+        this.user = user;
     }
 
     /**

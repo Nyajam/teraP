@@ -48,7 +48,6 @@
                   </td>
                   <td th:utext="${row.status}"></td>
                   <td th:utext="${row.lastCheck}"></td>
-                  <td th:utext="${row.lastUpdate}"></td>
                   <td th:utext="${row.ratio()}"></td>
                   <td>
                     <form method="post" action="/admin/hosts">
@@ -61,7 +60,6 @@
                   <td>
                     <form method="post" action="/admin/hosts">
                       <input type="hidden" name="host" th:value="${row.ip}">
-                      <input type="submit" name="mode" value="Update">
                       <input type="submit" name="delete" value="DELETE" style="color: red;">
                     </form>
                   </td>
@@ -91,10 +89,6 @@
               <p>
                 Virtualization system administrator username:<br>
                 <input type="text" name="userad">
-              </p>
-              <p>
-                Password of this user:<br>
-                <input type="password" name="pass">
               </p>
               <input type="submit" value="Create">
             </form>
@@ -184,10 +178,6 @@
               <p>
                 iSCSI system administrator username:<br>
                 <input type="text" name="userad">
-              </p>
-              <p>
-                Password of this user:<br>
-                <input type="password" name="pass">
               </p>
               <input type="submit" value="Create">
             </form>

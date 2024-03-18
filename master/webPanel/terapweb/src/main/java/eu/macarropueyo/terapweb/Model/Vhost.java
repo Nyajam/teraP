@@ -54,13 +54,13 @@ public class Vhost
      */
     public Date lastCheck;
     /**
-     * Ultima actualizacion de sistema del vhost
-     */
-    public Date lastUpdate;
-    /**
      * Estado del vhost
      */
     public StatusHost status;
+    /**
+     * Usuario de acceso al servidor
+     */
+    public String user;
 
     /**
      * Por imperativo de Spring.
@@ -75,7 +75,7 @@ public class Vhost
      * @param freq
      * @param mem
      */
-    public Vhost(String ip, int cores, int freq, int mem)
+    public Vhost(String ip, int cores, int freq, int mem, String user)
     {
         this.vms=new LinkedList<>();
         this.ip=ip;
@@ -84,7 +84,7 @@ public class Vhost
         this.mem=mem;
         this.status=StatusHost.CLOSE;
         this.lastCheck=new Date(0);
-        this.lastUpdate=new Date(0);
+        this.user = user;
     }
 
     /**

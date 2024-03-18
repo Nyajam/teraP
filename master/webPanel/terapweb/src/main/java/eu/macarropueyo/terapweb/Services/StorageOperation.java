@@ -31,12 +31,12 @@ public class StorageOperation
      * @param pass Password of the user, not save
      * @return Storage created, null if not
      */
-    public Storage addStorage(String ip, int space, int bandwidth, String user, String pass)
+    public Storage addStorage(String ip, int space, int bandwidth, String user)
     {
         Storage tmp = null;
         try
         {
-            tmp = stRepo.save(new Storage(ip, space, bandwidth));
+            tmp = stRepo.save(new Storage(ip, space, bandwidth, user));
             //Solicita al servicio interno el enlace de claves
         }
         catch(Exception e)
