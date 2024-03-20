@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
 
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class ControllerAdmin
     private VmOperation vmop;
 
     @RequestMapping("/admin") //Principal page of administration, it has the monitor
-    public String adminPage(Model modelo, HttpServletRequest sesion,
+    public String adminPage(Model modelo, Authentication sesion,
         Optional<String> nuke)
     {
         if(nuke.isPresent())
@@ -143,7 +143,7 @@ public class ControllerAdmin
     }
 
     @RequestMapping("/admin/hosts") //Page for manage the vhosts
-    public String hostspsPage(Model modelo, HttpServletRequest sesion,
+    public String hostspsPage(Model modelo, Authentication sesion,
         @RequestParam Optional<String> ip,
         @RequestParam Optional<Integer> cores,
         @RequestParam Optional<Integer> mem,
@@ -232,7 +232,7 @@ public class ControllerAdmin
     }
 
     @RequestMapping("/admin/storages") //Page for manage the storages
-    public String storagePage(Model modelo, HttpServletRequest sesion,
+    public String storagePage(Model modelo, Authentication sesion,
         @RequestParam Optional<String> ip,
         @RequestParam Optional<Integer> space,
         @RequestParam Optional<Integer> bandwidth,
@@ -306,7 +306,7 @@ public class ControllerAdmin
     }
 
     @RequestMapping("/admin/vms") //Page for manage the VMs
-    public String vmsPage(Model modelo, HttpServletRequest sesion,
+    public String vmsPage(Model modelo, Authentication sesion,
     Optional<String> uuid,
     Optional<String> grantVm,
     Optional<Long> expansionId,
@@ -367,7 +367,7 @@ public class ControllerAdmin
     }
 
     @RequestMapping("/admin/users") //Page of manage the users, only USERS
-    public String usersPage(Model modelo, HttpServletRequest sesion,
+    public String usersPage(Model modelo, Authentication sesion,
     Optional<String> name,
     Optional<String> field,
     Optional<String> value,
@@ -439,7 +439,7 @@ public class ControllerAdmin
     }
 
     @RequestMapping("/admin/groups") //Page of manage the grouos
-    public String groupsPage(Model modelo, HttpServletRequest sesion,
+    public String groupsPage(Model modelo, Authentication sesion,
         Optional<String> newGroupName,
         Optional<String> newGroupOwner,
         Optional<String> name,
@@ -500,18 +500,18 @@ public class ControllerAdmin
     }
 
     @RequestMapping("/admin/webpanel")
-    public String webpanelPage(Model modelo, HttpServletRequest sesion)
+    public String webpanelPage(Model modelo, Authentication sesion)
     {
         comun(modelo, sesion);
         chargeTags(modelo, sesion, 5);
         return "admin";
     }
 
-    private void comun(Model modelo, HttpServletRequest sesion)
+    private void comun(Model modelo, Authentication sesion)
     {
         //Specifics of the page
-        modelo.addAttribute("userAcces",sesion.getUserPrincipal()!=null);
-        modelo.addAttribute("username",sesion.getUserPrincipal().getName());
+        modelo.addAttribute("userAcces",sesion.isAuthenticated());
+        modelo.addAttribute("username",sesion.getName());
         modelo.addAttribute("pageName","Administration");
         modelo.addAttribute("colorBadmin","grey");
         modelo.addAttribute("admP", true); //Si ha llegado hasta aqui, es admin
@@ -544,7 +544,7 @@ public class ControllerAdmin
         modelo.addAttribute("hostModes",statsOperators);
     }
 
-    private void chargeTags(Model modelo, HttpServletRequest sesion, int code)
+    private void chargeTags(Model modelo, Authentication sesion, int code)
     {
         List<String[]> tags=new LinkedList<>();
         switch(code)

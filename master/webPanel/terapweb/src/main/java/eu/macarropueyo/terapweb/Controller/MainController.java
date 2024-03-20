@@ -3,7 +3,7 @@ package eu.macarropueyo.terapweb.Controller;
 import eu.macarropueyo.terapweb.Services.*;
 import eu.macarropueyo.terapweb.Model.*;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +18,7 @@ public class MainController
     private SystemOperation sysop;
 
     @RequestMapping("/start")
-    public String test(Model modelo, HttpServletRequest sesion)
+    public String test(Model modelo, Authentication sesion)
     {
         if(sysop.getSystemValue("start").length() > 0)
             return "empty";
@@ -38,12 +38,12 @@ public class MainController
     }
 
     @RequestMapping("/")
-    public String indexPage(Model modelo, HttpServletRequest sesion)
+    public String indexPage(Model modelo, Authentication sesion)
     {
-        if(sesion.getUserPrincipal()!=null)
+        if(sesion != null)
         {
             modelo.addAttribute("userAcces",true);
-            modelo.addAttribute("username",sesion.getUserPrincipal().getName());
+            modelo.addAttribute("username",sesion.getName());
         }
         else
             modelo.addAttribute("userAcces",false);
@@ -62,12 +62,12 @@ public class MainController
     }
 
     @RequestMapping("/fail")
-    public String errorPage(Model modelo, HttpServletRequest sesion)
+    public String errorPage(Model modelo, Authentication sesion)
     {
-        if(sesion.getUserPrincipal()!=null)
+        if(sesion != null)
         {
             modelo.addAttribute("userAcces",true);
-            modelo.addAttribute("username",sesion.getUserPrincipal().getName());
+            modelo.addAttribute("username",sesion.getName());
         }
         else
             modelo.addAttribute("userAcces",false);

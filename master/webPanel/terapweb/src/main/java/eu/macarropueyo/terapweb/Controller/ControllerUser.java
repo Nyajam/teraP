@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,13 +24,13 @@ public class ControllerUser
     private SystemOperation sysop;
     
     @RequestMapping("/myuser")
-    public String myuserPage(Model modelo, HttpServletRequest sesion,
+    public String myuserPage(Model modelo, Authentication sesion,
         Optional<String> value,
         Optional<String> changePass,
         Optional<String> changeMail,
         Optional<String> sendMe)
     {
-        User user = useop.getUser(sesion.getUserPrincipal().getName());
+        User user = useop.getUser(sesion.getName());
         if(changePass.isPresent() && value.isPresent())
         {
             useop.updatePassword(user, value.get());
@@ -56,11 +56,11 @@ public class ControllerUser
         return "myuser";
     }
 
-    private void comun(Model modelo, HttpServletRequest sesion)
+    private void comun(Model modelo, Authentication sesion)
     {
-        User user = useop.getUser(sesion.getUserPrincipal().getName());
-        modelo.addAttribute("userAcces",sesion.getUserPrincipal()!=null);
-        modelo.addAttribute("username",sesion.getUserPrincipal().getName());
+        User user = useop.getUser(sesion.getName());
+        modelo.addAttribute("userAcces",sesion.isAuthenticated());
+        modelo.addAttribute("username",sesion.getName());
         modelo.addAttribute("pageName","My user");
         modelo.addAttribute("colorBmyuser","grey");
         if(user.isRoot()) //Si es admin
@@ -81,7 +81,7 @@ public class ControllerUser
         modelo.addAttribute("sections",sections);
     }
 
-    private void chargeTags(Model modelo, HttpServletRequest sesion, int code)
+    private void chargeTags(Model modelo, Authentication sesion, int code)
     {
         List<String[]> tags=new LinkedList<>();
         switch(code)

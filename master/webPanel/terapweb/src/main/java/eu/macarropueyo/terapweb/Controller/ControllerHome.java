@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,10 +41,10 @@ public class ControllerHome
     
 
     @RequestMapping("/home") //Sirve a "My VMs"
-    public String homePage(Model modelo, HttpServletRequest sesion,
+    public String homePage(Model modelo, Authentication sesion,
         @RequestParam Optional<String> join)
     {
-        User myuser = useop.getUser(sesion.getUserPrincipal().getName());
+        User myuser = useop.getUser(sesion.getName());
         if(join.isPresent()) //Generar una solicitud de union a un grupo
         {
             Groupp tmp = gpop.getGroupp(join.get());
@@ -59,14 +59,14 @@ public class ControllerHome
     }
 
     @RequestMapping("/home/myvms") //Sirve a "My VMs"
-    public String myvmsPage(Model modelo, HttpServletRequest sesion,
+    public String myvmsPage(Model modelo, Authentication sesion,
         @RequestParam Optional<Integer> vmcore,
         @RequestParam Optional<Integer> vmfreq,
         @RequestParam Optional<Integer> vmmem,
         @RequestParam Optional<String> uuid,
         @RequestParam Optional<String> unshare)
     {
-        User myuser = useop.getUser(sesion.getUserPrincipal().getName());
+        User myuser = useop.getUser(sesion.getName());
         if(vmcore.isPresent() && vmfreq.isPresent() && vmmem.isPresent()) //Caso de crear una request
             if(vmop.newVM(myuser.myGroup, "", vmcore.get(), vmfreq.get(), vmmem.get(), 0)==null)
                 modelo.addAttribute("msgOfSystem","Error at create the request");
@@ -103,7 +103,7 @@ public class ControllerHome
     }
 
     @RequestMapping("/home/mygroups") //Gestion de grupos (usuarios, el grupo, request y VMs)
-    public String homeSelectGroupsPage(Model modelo, HttpServletRequest sesion,
+    public String homeSelectGroupsPage(Model modelo, Authentication sesion,
         @RequestParam Optional<String> groupselect,
         @RequestParam Optional<String> expulse,
         @RequestParam Optional<String> acceptpetition,
@@ -115,7 +115,7 @@ public class ControllerHome
         @RequestParam Optional<String> exitgroup,
         @RequestParam Optional<String> deleteGroup)
     {
-        User myuser = useop.getUser(sesion.getUserPrincipal().getName());
+        User myuser = useop.getUser(sesion.getName());
         Groupp group = null;
         if(deleteGroup.isPresent()) //El admin quiere borrar el grupo
         {
@@ -188,12 +188,12 @@ public class ControllerHome
     }
 
     @RequestMapping("/home/vmoperation") //Gestion de grupos (usuarios, el grupo, request y VMs)
-    public String operationVMs(Model modelo, HttpServletRequest sesion,
+    public String operationVMs(Model modelo, Authentication sesion,
         @RequestParam Optional<String> uuid,
         @RequestParam Optional<String> operation,
         @RequestParam Optional<Integer> newSize)
     {
-        User myuser = useop.getUser(sesion.getUserPrincipal().getName());
+        User myuser = useop.getUser(sesion.getName());
         if(operation.isPresent() && uuid.isPresent())
         {
             //Parte comun, solo para controles basicos
@@ -236,9 +236,9 @@ public class ControllerHome
         return "empty";
     }
 
-    private void comunHome(Model modelo, HttpServletRequest sesion) //Pendiente de limpiar mierda a otro metodo
+    private void comunHome(Model modelo, Authentication sesion) //Pendiente de limpiar mierda a otro metodo
     {
-        User myuser = useop.getUser(sesion.getUserPrincipal().getName());
+        User myuser = useop.getUser(sesion.getName());
         
         modelo.addAttribute("headersRequests", new String[]{"Entity", "Date", "CPU", "RAM"}); //Cabecera de la lista de requests
         modelo.addAttribute("vms", vmop.requests()); //Lista de las request ya ordenadas
@@ -251,7 +251,7 @@ public class ControllerHome
         modelo.addAttribute("myPetition", myuser.joinToGroups); //Mis peticiones a grupos
     }
 
-    private void comunVms(Model modelo, HttpServletRequest sesion, Groupp grupo)
+    private void comunVms(Model modelo, Authentication sesion, Groupp grupo)
     {
         //Cabecera de la lista de vms solicitadas por el usuario
         modelo.addAttribute("headersMyRequests", new String[]{"State", "Date", "Cores", "Memory", "Action"});
@@ -274,13 +274,13 @@ public class ControllerHome
             modelo.addAttribute("vmOperate", grupo.getResources());
     }
 
-    private void comun(Model modelo, HttpServletRequest sesion)
+    private void comun(Model modelo, Authentication sesion)
     {
-        modelo.addAttribute("userAcces",sesion.getUserPrincipal()!=null);
-        modelo.addAttribute("username",sesion.getUserPrincipal().getName());
+        modelo.addAttribute("userAcces",sesion.isAuthenticated());
+        modelo.addAttribute("username",sesion.getName());
         modelo.addAttribute("pageName","Home");
         modelo.addAttribute("colorBhome","grey");
-        modelo.addAttribute("admP", useop.getUser(sesion.getUserPrincipal().getName()).isRoot()); //Si es admin
+        modelo.addAttribute("admP", useop.getUser(sesion.getName()).isRoot()); //Si es admin
 
         //Specifics of the web
         modelo.addAttribute("title", sysop.getSystemValue("title"));
@@ -299,7 +299,7 @@ public class ControllerHome
         modelo.addAttribute("sections",sections);
     }
 
-    private void chargeTags(Model modelo, HttpServletRequest sesion, int code)
+    private void chargeTags(Model modelo, Authentication sesion, int code)
     {
         List<String[]> tags=new LinkedList<>();
         switch(code)

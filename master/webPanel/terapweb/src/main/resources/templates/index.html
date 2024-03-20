@@ -8,9 +8,9 @@
 <div id="login" th:if="${errorBox} == false">
   <form action="/" method="POST" th:if="${userAcces} == false">
     <p>User:</p>
-    <input type="text" name="user"/>
+    <input type="text" name="username"/>
     <p>Password:</p>
-    <input type="password" name="passwd"/>
+    <input type="password" name="password"/>
     <p></p>
     <input type="submit" value="login!"/>
   </form>

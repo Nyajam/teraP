@@ -3,7 +3,7 @@ package eu.macarropueyo.terapweb.Controller;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,11 +25,11 @@ public class ControllerHelp {
     private SystemOperation sysop;
 
     @RequestMapping(value = {"/help", "/help/{link}"})
-    public String helpHubPage(Model modelo, HttpServletRequest sesion, @PathVariable("link") Optional<String> link)
+    public String helpHubPage(Model modelo, Authentication sesion, @PathVariable("link") Optional<String> link)
     {
-        User user = useop.getUser(sesion.getUserPrincipal().getName());
-        modelo.addAttribute("userAcces",sesion.getUserPrincipal()!=null);
-        modelo.addAttribute("username",sesion.getUserPrincipal().getName());
+        User user = useop.getUser(sesion.getName());
+        modelo.addAttribute("userAcces",sesion.isAuthenticated());
+        modelo.addAttribute("username",sesion.getName());
         modelo.addAttribute("pageName","Help");
         modelo.addAttribute("colorBhelp","grey");
         if(user.isRoot()) //Si es admin
