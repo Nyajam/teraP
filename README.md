@@ -22,7 +22,7 @@ This code is over GLPv3 license.
 
 This software is designed over Rocky Linux 9.
 
-- Java 11
+- Java 17
 - Mariadb 10.5.22
 - Python 3.9
 
