@@ -41,12 +41,12 @@ public class ControllerAdmin
             sysop.nuke();
         if(!sysop.isNuke())
         {
-            modelo.addAttribute("nuke", "ARMED");
+            modelo.addAttribute("nuke", "ON");
             modelo.addAttribute("nukeColor", "green");
         }
         else
         {
-            modelo.addAttribute("nuke", "LAUNCH");
+            modelo.addAttribute("nuke", "OFF");
             modelo.addAttribute("nukeColor", "red");
         }
         //

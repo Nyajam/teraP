@@ -6,10 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 import eu.macarropueyo.terapweb.Model.*;
 import eu.macarropueyo.terapweb.Repository.DiskExpansionRepository;
-import eu.macarropueyo.terapweb.Repository.PoolRepository;
 import eu.macarropueyo.terapweb.Repository.VmRepository;
 
 @Component
@@ -17,10 +15,6 @@ public class VmOperation
 {
     @Autowired
     private VmRepository vmRepo;
-    @Autowired
-    private PoolRepository polRepo;
-    @Autowired
-    private VhostsOperation vhop;
     @Autowired
     private SystemOperation sysop;
     @Autowired
@@ -30,14 +24,14 @@ public class VmOperation
     
 
     /**
-     * Crea una vm sin definir, sin asignar
-     * @param group Grupo que crea la vm
+     * Create a VM without definition
+     * @param group
      * @param name
      * @param cores
      * @param freq
-     * @param mem
-     * @param space
-     * @return Vm creada
+     * @param mem in MiB
+     * @param space in GiB
+     * @return The VM
      */
     public VM newVM(Groupp group, String name, int cores, int freq, int mem, int space)
     {
@@ -45,7 +39,7 @@ public class VmOperation
     }
 
     /**
-     * Borra una vm no definida ni asignada
+     * Delete a VM without definition
      * @param vm
      */
     public void removeVM(VM vm)
@@ -56,93 +50,71 @@ public class VmOperation
     }
 
     /**
-     * Apaga una vm definida en un vhost
+     * Shutdown a define VM
      * @param vm
      */
     public void shutdown(VM vm)
     {
-        vm.token=""; //temporal, es tarea del servicio interno definir el token
-        vmRepo.save(vm);
+        sysop.commandToInternalService("/shutdownvm/"+vm.getUuid());
     }
 
     /**
-     * Fuerza el apagado una vm definida en un vhost
+     * Force the shutdown of a define VM
      * @param vm
      */
     public void shutdownNow(VM vm)
     {
-        vm.token=""; //temporal, es tarea del servicio interno definir el token
-        vmRepo.save(vm);
+        sysop.commandToInternalService("/forceshutdownvm/"+vm.getUuid());
     }
 
     /**
-     * Reinicia una vm definida en un vhost
+     * Reboot a define VM
      * @param vm
      */
     public void restart(VM vm)
-    {}
+    {
+        sysop.commandToInternalService("/restartvm/"+vm.getUuid());
+    }
 
     /**
-     * Enciende una vm definida en un vhost
+     * Startup a define VM
      * @param vm
      */
     public void start(VM vm)
     {
-        vm.token = "http://"+vm.host.ip+":"+vm.port; //temporal, es tarea del servicio interno definir el token
-        vmRepo.save(vm);
+        sysop.commandToInternalService("/startvm/"+vm.getUuid());
     }
 
     /**
-     * Borra la vm del sistema, quita la definicion, desasigna el vhost y elimina su pool (no puede tener discos)
+     * Undefined a define VM
      * @param vm
      */
     public void undefine(VM vm)
     {
-        //La vm debe estar apagada, preguntar al servicio interno
-        if(vm.pool==null)
-            return;
-        if(!vm.pool.vdisks.isEmpty())
-            return;
-        stgop.deleteTarget(vm.pool);
-        vm.setDefinition(null, null, "");
-        vm.setStatusIsVoid();
-        vmRepo.save(vm);
+        if(vm != null)
+        {
+            if(vm.isDefine())
+            {
+                if(vm.pool.vdisks.isEmpty())
+                    sysop.commandToInternalService("/undefinevm/"+vm.getUuid());
+            }
+        }
     }
 
     /**
-     * Define una vm en un vhost
+     * Define a undefined VM
      * @param vm
      */
     public boolean define(VM vm, int space)
     {
-        Vhost host = vhop.findFreeVhost(vm);
-        if(host==null)
+        if(vm == null || space < 0)
             return false;
-        Pool pool = stgop.createTarget(vm);
-        stgop.createDisk(pool, space);
-        String definition = "<KVM>"; //Solicitar al servicio interno
-        vm.setDefinition(host, pool, definition);
-        vmRepo.save(vm);
-        return true;
+        return sysop.commandToInternalService("/definevm/"+vm.getUuid()+"/"+space) != null;
     }
 
     /**
-     * Pausa la ejecucion de una vm definida en un vhost
-     * @param vm
-     */
-    public void pause(VM vm)
-    {}
-
-    /**
-     * Reanuda de la pausa a una vm definida en un vhost
-     * @param vm
-     */
-    public void resume(VM vm)
-    {}
-
-    /**
-     * Lista de las vms pendientes de crear.
-     * @return
+     * List of VM requests (no define)
+     * @return The list
      */
     public List<VM> requests()
     {
@@ -151,6 +123,11 @@ public class VmOperation
         return vms;
     }
 
+    /**
+     * Find a VM by your uuid
+     * @param uuid
+     * @return
+     */
     public VM findByUUID(String uuid)
     {
         Optional<VM> tmp = vmRepo.findByUuid(uuid);
@@ -159,6 +136,11 @@ public class VmOperation
         return tmp.get();
     }
 
+    /**
+     * Create a new request for a new disk
+     * @param vm
+     * @param size in GiB
+     */
     public void newExpansion(VM vm, int size)
     {
         if(vm.expansion != null)
@@ -168,16 +150,28 @@ public class VmOperation
         vmRepo.save(vm);
     }
 
+    /**
+     * List of request for new disk
+     * @return
+     */
     public List<DiskExpansion> getDiskExpansions()
     {
         return deRepo.findAll();
     }
 
+    /**
+     * Refuse a request for new disk
+     * @param id The id of the request
+     */
     public void refuseDisExpansion(long id)
     {
         deRepo.deleteById(id);
     }
 
+    /**
+     * Accept a request for new disk
+     * @param id The id of the request
+     */
     public void acceptDisExpansion(long id)
     {
         Optional<DiskExpansion> tmp = deRepo.findById(id);
@@ -186,6 +180,10 @@ public class VmOperation
                 deRepo.delete(tmp.get());
     }
 
+    /**
+     * List with all define VMs
+     * @return
+     */
     public List<VM> getAllVms()
     {
         List<VM> vms = vmRepo.findAllByOrderByDateAsc();
@@ -194,11 +192,13 @@ public class VmOperation
     }
 
     /**
-     * Borra el disco y vuelve a cargar la imagen
+     * Erase the disk and remake the VM with the image
      * @param vm
      */
     public void remake(VM vm)
-    {}
+    {
+        sysop.commandToInternalService("/remakevm/"+vm.getUuid());
+    }
 
     /**
      * Return the number of VMs in the cluster

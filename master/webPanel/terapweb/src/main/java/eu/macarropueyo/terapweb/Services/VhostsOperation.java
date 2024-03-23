@@ -15,12 +15,10 @@ public class VhostsOperation
 {
     @Autowired
     private VhostRepository vhRepo;
-
-    @Autowired
-    private VmRepository vmRepo;
-
     @Autowired
     private LogHostRepository logRepo;
+    @Autowired
+    private SystemOperation sysop;
 
     /**
      * Create a new vhost and share ssh keys
@@ -29,16 +27,19 @@ public class VhostsOperation
      * @param freq frequency of cpu
      * @param mem memory in MiB
      * @param user user for access to the system
-     * @param pass password of user
      * @return Return the new Vhost if have been create (null if not)
      */
-    public Vhost addVhost(String ip, int cores, int freq, int mem, String user, String pass)
+    public Vhost addVhost(String ip, int cores, int freq, int mem, String user)
     {
         Vhost tmp = null;
         try
         {
-            tmp = vhRepo.save(new Vhost(ip, cores, freq, mem));
-            //Llamar a servicio interno que comparta las claves ssh
+            tmp = vhRepo.save(new Vhost(ip, cores, freq, mem, user));
+            if(sysop.commandToInternalService("/checkhost/"+ip) == null)
+            {
+                logRepo.save(new LogHost(tmp, "Error with the internal service for locate the host"));
+                return null;
+            }
         }
         catch(Exception e)
         {
@@ -58,6 +59,7 @@ public class VhostsOperation
             return false;
         if(!vhost.vms.isEmpty()) //Host is empty
             return false;
+        logRepo.deleteByVhost(vhost);
         vhRepo.delete(vhost); //Delete host
         return true;
     }
@@ -76,25 +78,12 @@ public class VhostsOperation
     }
 
     /**
-     * Update the host, lock operation
-     * @param vh
-     */
-    public void updateVhost(Vhost vh)
-    {
-        //Solicita al servicio interno actualizar el equipo BLOQUEANTE
-        vh.lastUpdate.setTime(new java.util.Date().getTime());
-        vhRepo.save(vh);
-    }
-
-    /**
      * Check the state of the host, lock operation
      * @param vh
      */
     public void checkStatus(Vhost vh)
     {
-        //Solicita al servicio interno que compruebe el estado del vhost y actualice la base de datos
-        vh.lastCheck.setTime(new java.util.Date().getTime());
-        vhRepo.save(vh);
+        sysop.commandToInternalService("/checkhost/"+vh.ip);
     }
 
     /**
@@ -103,9 +92,9 @@ public class VhostsOperation
      */
     public void maintenance(Vhost vh)
     {
-        //Notifica al servicio interno cambios en este host
         vh.status=StatusHost.MAINTENANCE;
         vhRepo.save(vh);
+        sysop.commandToInternalService("/changehostsatus/"+vh.ip);
     }
 
     /**
@@ -114,9 +103,9 @@ public class VhostsOperation
      */
     public void lock(Vhost vh)
     {
-        //Notifica al servicio interno cambios en este host
         vh.status=StatusHost.CLOSE;
         vhRepo.save(vh);
+        sysop.commandToInternalService("/changehostsatus/"+vh.ip);
     }
 
     /**
@@ -140,18 +129,9 @@ public class VhostsOperation
      */
     public void expulse(Vhost vh)
     {
-        //Operaciones realizadas por el servicio interno, este metodo, solo actualiza el estado y notifica de cambios al servicio interno
         vh.status=StatusHost.EXPULSE;
         vhRepo.save(vh);
-        for (VM vm : vh.vms)
-        {
-            Vhost target = findFreeVhost(vm);
-            if(target==null)
-                continue;
-            move(target, vm);
-        }
-        if(!vh.vms.isEmpty()) //Si no se han podido mover todos las vm, el servicio interno lo tendra en cuenta
-        {}
+        sysop.commandToInternalService("/changehostsatus/"+vh.ip);
     }
 
     /**
@@ -161,17 +141,7 @@ public class VhostsOperation
      */
     public void move(Vhost dest, VM vm)
     {
-        //Operacion solicitada al servicio interno, el actualiza la db
-        if(dest.fitVm(vm)) //Entra en el host
-        {
-            Vhost origen = vm.host;
-            origen.vms.remove(vm);
-            dest.vms.add(vm);
-            vm.host=dest;
-            vhRepo.save(origen);
-            vhRepo.save(dest);
-            vmRepo.save(vm);
-        }
+        sysop.commandToInternalService("/movevmhost/"+dest.ip+"/"+vm.getUuid());
     }
 
     /**

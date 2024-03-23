@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import eu.macarropueyo.terapweb.Model.*;
-import eu.macarropueyo.terapweb.Repository.GroupRepository;
 import eu.macarropueyo.terapweb.Repository.UserRepository;
 
 @Component
@@ -21,14 +20,11 @@ public class UserOperation
     private GrouppOperation grpop;
 
     /**
-     * Crea un usuario, la contrasena se genera aleatoria.
-     * Se notifica al mail su contrasena.
-     * @param name
-     * Nombre del usuario.
-     * @param mail
-     * Mail del usuario.
-     * @return
-     * El usuario recien creado
+     * Create a user with random password.
+     * The password it will send by email.
+     * @param name Name of the user
+     * @param mail Email of the user
+     * @return The user created
      */
     public User addUser(String name, String mail)
     {
@@ -44,10 +40,9 @@ public class UserOperation
     }
 
     /**
-     * Elimina un usuario especificado por el nombre, si no tiene recursos y no administra grupos
-     * @param name
-     * @return
-     * True si se han dado las condiciones para borrarlo
+     * Remove a user (by the name) if dont have resources or are the owner of groups
+     * @param name Name of the user
+     * @return True if it was removed
      */
     public boolean removeUser(String name)
     {
@@ -57,9 +52,9 @@ public class UserOperation
         User user = tmp.get();
         if(!user.haveResources()&&!user.administrationGroups())
         {
-            for (Groupp group : user.groups) //Saaca al usuario de los grupos
+            for (Groupp group : user.groups) //Expulse the user of the groups
                 grpop.removeUserOfGroup(group, user);
-            grpop.removeGroup(user.myGroup); //Elimina su grupo personal
+            grpop.removeGroup(user.myGroup); //Remove their group
             userRepo.delete(user);
             return true;
         }
@@ -67,10 +62,9 @@ public class UserOperation
     }
 
     /**
-     * Busca un usuario segun un nombre
+     * Search a user by the name
      * @param name
-     * @return
-     * Null si no existe
+     * @return Null if not exist
      */
     public User getUser(String name)
     {
@@ -81,11 +75,9 @@ public class UserOperation
     }
 
     /**
-     * Envia un mensaje al usuario a su correo indicado
-     * @param msg
-     * Mensaje a enviar.
-     * @param user
-     * Usuario destino.
+     * Send a message by the email.
+     * @param msg Message for send
+     * @param user Send to this user
      */
     public void sendNotify(String msg, User user)
     {
@@ -93,9 +85,8 @@ public class UserOperation
     }
 
     /**
-     * Bloquea a un usuario y se lo notifica
+     * Block the access a user and send a message
      * @param user
-     * Usuario a bloquear
      */
     public void block(User user)
     {
@@ -106,7 +97,7 @@ public class UserOperation
     }
 
     /**
-     * Desbloquea a un usuario y se lo notifica
+     * Unlock the access a user and send a message
      * @param user
      */
     public void unblock(User user)
@@ -117,19 +108,21 @@ public class UserOperation
     }
 
     /**
-     * Actualiza la password de un usuario
+     * Update the password of a user
      * @param user
      * @param pass
      */
     public void updatePassword(User user, String pass)
     {
+        if(pass.contains("\""))
+            return;
         user.setPassword(pass);
         userRepo.save(user);
-        //Servicio interno propaga la clave a servicios asociados
+        sysop.commandToInternalServicePost("/updatepassword/"+user.name, "{\"passwd\":\""+pass+"\"}"); //Expand the password for other services
     }
 
     /**
-     * Actualiza el mail de un usuario
+     * Update the email of a user
      * @param user
      * @param mail
      */
@@ -140,7 +133,7 @@ public class UserOperation
     }
 
     /**
-     * Convierte en administrador a un usuario
+     * Convert a user to administrator
      * @param user
      */
     public void grantAdm(User user)
@@ -150,7 +143,7 @@ public class UserOperation
     }
 
     /**
-     * Convierte a un administrador en un usuario sin privilegios
+     * Convert an administrator to a normal user
      * @param user
      */
     public void revokeAdm(User user)
@@ -159,6 +152,10 @@ public class UserOperation
         userRepo.save(user);
     }
 
+    /**
+     * Return all users
+     * @return
+     */
     public List<User> getAllUsers()
     {
         return userRepo.findAll();

@@ -16,19 +16,18 @@ public class StorageOperation
     @Autowired
     private StorageRepository stRepo;
     @Autowired
-    private PoolRepository polRepo;
-    @Autowired
     private VdiskRepository vdRepo;
     @Autowired
     private LogStorageRepository logRepo;
+    @Autowired
+    private SystemOperation sysop;
 
     /**
      * Add a storage.
      * @param ip
      * @param space
      * @param bandwidth
-     * @param user User for the ssh keys, not save
-     * @param pass Password of the user, not save
+     * @param user User for iSCSI control
      * @return Storage created, null if not
      */
     public Storage addStorage(String ip, int space, int bandwidth, String user)
@@ -37,7 +36,11 @@ public class StorageOperation
         try
         {
             tmp = stRepo.save(new Storage(ip, space, bandwidth, user));
-            //Solicita al servicio interno el enlace de claves
+            if(sysop.commandToInternalService("/addstorage/"+ip) == null)
+            {
+                logRepo.save(new LogStorage(tmp, "Error with the internal service to add storage"));
+                return null;
+            }
         }
         catch(Exception e)
         {
@@ -55,7 +58,15 @@ public class StorageOperation
     {
         if(!stg.vdisks.isEmpty())
             return false;
-        stRepo.delete(stg);
+        try
+        {
+            logRepo.deleteByStorage(stg);
+            stRepo.delete(stg);
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
         return true;
     }
 
@@ -77,7 +88,9 @@ public class StorageOperation
      * @param stg
      */
     public void checkStatus(Storage stg)
-    {}
+    {
+        sysop.commandToInternalService("/checkstorage/"+stg.ip);
+    }
 
     /**
      * Enable the maintenance status over the storage
@@ -87,6 +100,7 @@ public class StorageOperation
     {
         stg.status=StatusHost.MAINTENANCE;
         stRepo.save(stg);
+        sysop.commandToInternalService("/changestoragesatus/"+stg.ip);
     }
 
     /**
@@ -97,6 +111,7 @@ public class StorageOperation
     {
         stg.status=StatusHost.CLOSE;
         stRepo.save(stg);
+        sysop.commandToInternalService("/changestoragesatus/"+stg.ip);
     }
 
     /**
@@ -115,35 +130,6 @@ public class StorageOperation
     }
 
     /**
-     * Make the space of connections to vdisks for a vm (a pool) with the internal service
-     * @param vm Vm without pool
-     * @return Pool for this vm.
-     */
-    public Pool createTarget(VM vm)
-    {
-        if(vm.pool==null)
-        {
-            //El servico tiene que propagar la pool por todos los vhosts.
-            String target = "iqn.2022-08.server.domain:target-"+(int)(Math.random()*1000); //Solicitar al servicio interno
-            Pool pol = new Pool(vm, target);
-            polRepo.save(pol);
-            return pol;
-        }
-        return null;
-    }
-
-    /**
-     * Remove the space of connections (a pool) with the internal service
-     * @param pol
-     */
-    public void deleteTarget(Pool pol)
-    {
-        //La vm tiene que estar apagada, eso lo dice el servicio interno
-        if(pol.vdisks.isEmpty())
-            polRepo.delete(pol);
-    }
-
-    /**
      * Create a vidsk in a storage
      * @param pool Pool owner of the vdisk
      * @param space Space of the disk in GiB
@@ -153,15 +139,7 @@ public class StorageOperation
     {
         if(pool == null)
             return false;
-        String initiator = "iqn.2022-08.server.domain:initiator-"+(int)(Math.random()*1000); //Solicitar al servicio interno
-        Storage stg = findFreeStorage(space);
-        if(stg!=null)
-        {
-            vdRepo.save(new Vdisk(pool, stg, space, initiator));
-            polRepo.save(pool); //The constructor modify the pool
-            return true;
-        }
-        return false;
+        return sysop.commandToInternalService("/createdisk/"+pool.vm.getUuid()+"/"+space) != null;
     }
 
     /**
@@ -170,25 +148,7 @@ public class StorageOperation
      */
     public void deleteDisk(Vdisk vd)
     {
-        //La vm tiene que estar apagada, eso lo dice el servicio interno
-        //Servicio interno borra el disco
-        if(vd != null)
-            vdRepo.delete(vd);
-    }
-
-    /**
-     * Search a storage with enough space
-     * @param space
-     * @return
-     */
-    public Storage findFreeStorage(int space)
-    {
-        for (Storage stg : stRepo.findAll())
-        {
-            if(stg.getFreeSpace()>=space)
-                return stg;
-        }
-        return null;
+        sysop.commandToInternalService("/deletedisk/"+vd.pool.vm.getUuid()+"/"+vd.initiator);
     }
 
     /**

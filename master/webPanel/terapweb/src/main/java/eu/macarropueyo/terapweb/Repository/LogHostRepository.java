@@ -12,4 +12,5 @@ public interface LogHostRepository extends JpaRepository<LogHost, Long>
     List<LogHost> findByVhostOrderByDateDesc(Vhost vhost); //DESC or ASC
     List<LogHost> findAllByOrderByDateAsc();
     List<LogHost> findByDate(Date date);
+    void deleteByVhost(Vhost vhost);
 }
