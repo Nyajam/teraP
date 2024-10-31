@@ -30,10 +30,10 @@ public class MainController
         sysop.setSystemValue("generalPageDescription", "Plataforma de virtualización en cluster");
         sysop.setSystemValue("logoUrl", "https://raw.githubusercontent.com/Nyajam/teraP/main/images/logo.png");
         sysop.setSystemValue("colorHead", "#74b1ff");
-        sysop.setSystemValue("colorBox", "lightsteelblue");
-        sysop.setSystemValue("colorBTN", "darkgray");
-        sysop.setSystemValue("colorBackground", "white");
-        sysop.setSystemValue("colorTags", "grey");
+        sysop.setSystemValue("colorBox", "#b0c4de");
+        sysop.setSystemValue("colorBTN", "#a9a9a9");
+        sysop.setSystemValue("colorBackground", "#ffffff");
+        sysop.setSystemValue("colorTags", "#808080");
         return "empty";
     }
 
