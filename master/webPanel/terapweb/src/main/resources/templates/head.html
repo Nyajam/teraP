@@ -11,9 +11,10 @@
   </head>
   <body>
     <header>
-      <a href="/" style="margin: 0;">
+      <a href="/" style="margin: 0; display: flex;">
         <img id=logo th:src="${logoUrl}" width="60" height="60" />
         <h1 th:text=${title}></h1>
+        <h6 style="margin-top: auto; margin-left: 5px;">powered by teraP</h6>
       </a>
     </header>
     <nav th:if="${userAcces} == true">
