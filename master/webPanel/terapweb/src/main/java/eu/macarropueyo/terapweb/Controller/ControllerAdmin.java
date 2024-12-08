@@ -312,8 +312,31 @@ public class ControllerAdmin
     Optional<Long> expansionId,
     Optional<String> denegateExpansion,
     Optional<String> grantExpansion,
-    Optional<String> mode)
+    Optional<String> mode,
+    Optional<String> vmcoreminValue,
+    Optional<String> vmfreqminValue,
+    Optional<String> vmmemminValue,
+    Optional<String> vmcorevalValue,
+    Optional<String> vmfreqvalValue,
+    Optional<String> vmmemvalValue,
+    Optional<String> vmcoremaxValue,
+    Optional<String> vmfreqmaxValue,
+    Optional<String> vmmemmaxValue)
     {
+        if(vmcoreminValue.isPresent() && vmfreqminValue.isPresent() && vmmemminValue.isPresent() && 
+            vmcorevalValue.isPresent() && vmfreqvalValue.isPresent() && vmmemvalValue.isPresent() && 
+            vmcoremaxValue.isPresent() && vmfreqmaxValue.isPresent() && vmmemmaxValue.isPresent())
+        {
+            sysop.setSystemValue("vmcoremin", vmcoreminValue.get());
+            sysop.setSystemValue("vmfreqmin", vmfreqminValue.get());
+            sysop.setSystemValue("vmmemmin", vmmemminValue.get());
+            sysop.setSystemValue("vmcoreval", vmcorevalValue.get());
+            sysop.setSystemValue("vmfreqval", vmfreqvalValue.get());
+            sysop.setSystemValue("vmmemval", vmmemvalValue.get());
+            sysop.setSystemValue("vmcoremax", vmcoremaxValue.get());
+            sysop.setSystemValue("vmfreqmax", vmfreqmaxValue.get());
+            sysop.setSystemValue("vmmemmax", vmmemmaxValue.get());
+        }
         if(expansionId.isPresent())
         {
             if(denegateExpansion.isPresent())
@@ -352,6 +375,15 @@ public class ControllerAdmin
                 }
             }
         }
+        modelo.addAttribute("vmcorevalValue", sysop.getSystemValue("vmcoreval"));
+        modelo.addAttribute("vmcoreminValue", sysop.getSystemValue("vmcoremin"));
+        modelo.addAttribute("vmcoremaxValue", sysop.getSystemValue("vmcoremax"));
+        modelo.addAttribute("vmfreqvalValue", sysop.getSystemValue("vmfreqval"));
+        modelo.addAttribute("vmfreqminValue", sysop.getSystemValue("vmfreqmin"));
+        modelo.addAttribute("vmfreqmaxValue", sysop.getSystemValue("vmfreqmax"));
+        modelo.addAttribute("vmmemvalValue", sysop.getSystemValue("vmmemval"));
+        modelo.addAttribute("vmmemminValue", sysop.getSystemValue("vmmemmin"));
+        modelo.addAttribute("vmmemmaxValue", sysop.getSystemValue("vmmemmax"));
         modelo.addAttribute("requestsHeaders", new String[]{"Applicant", "Date", "Cores", "Memory", "Status"});
         modelo.addAttribute("requests", vmop.requests());
         modelo.addAttribute("freeResourcesHeaders", new String[]{"Cores", "Memory"});

@@ -34,6 +34,15 @@ public class MainController
         sysop.setSystemValue("colorBTN", "#a9a9a9");
         sysop.setSystemValue("colorBackground", "#ffffff");
         sysop.setSystemValue("colorTags", "#808080");
+        sysop.setSystemValue("vmcoreval", "4");
+        sysop.setSystemValue("vmcoremin", "1");
+        sysop.setSystemValue("vmcoremax", "8");
+        sysop.setSystemValue("vmfreqval", "2000");
+        sysop.setSystemValue("vmfreqmin", "1000");
+        sysop.setSystemValue("vmfreqmax", "3000");
+        sysop.setSystemValue("vmmemval", "16");
+        sysop.setSystemValue("vmmemmin", "1");
+        sysop.setSystemValue("vmmemmax", "128");
         return "empty";
     }
 

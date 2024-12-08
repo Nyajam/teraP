@@ -20,7 +20,6 @@ import eu.macarropueyo.terapweb.Services.GrouppOperation;
 import eu.macarropueyo.terapweb.Services.StorageOperation;
 import eu.macarropueyo.terapweb.Services.SystemOperation;
 import eu.macarropueyo.terapweb.Services.UserOperation;
-import eu.macarropueyo.terapweb.Services.VhostsOperation;
 import eu.macarropueyo.terapweb.Services.VmOperation;
 
 @Controller
@@ -32,8 +31,6 @@ public class ControllerHome
     private GrouppOperation gpop;
     @Autowired
     private VmOperation vmop;
-    @Autowired
-    private VhostsOperation vhop;
     @Autowired
     private StorageOperation stgop;
     @Autowired
@@ -259,15 +256,15 @@ public class ControllerHome
         if(grupo != null)
             modelo.addAttribute("dataMyRequests", grupo.getRequests());
         //Paramatros base de nuevas VMs
-        modelo.addAttribute("vmcoreval", 4); //Falta determinar el caso default
-        modelo.addAttribute("vmcoremin", 1);
-        modelo.addAttribute("vmcoremax", vhop.getMaxCores());
-        modelo.addAttribute("vmfreqval", 2000); //Falta determinar el caso default
-        modelo.addAttribute("vmfreqmin", 1);
-        modelo.addAttribute("vmfreqmax", vhop.getMaxFreq());
-        modelo.addAttribute("vmmemval", 16); //Falta determinar el caso default
-        modelo.addAttribute("vmmemmin", 1);
-        modelo.addAttribute("vmmemmax", vhop.getMaxMem());
+        modelo.addAttribute("vmcoreval", sysop.getSystemValue("vmcoreval"));
+        modelo.addAttribute("vmcoremin", sysop.getSystemValue("vmcoremin"));
+        modelo.addAttribute("vmcoremax", sysop.getSystemValue("vmcoremax"));
+        modelo.addAttribute("vmfreqval", sysop.getSystemValue("vmfreqval"));
+        modelo.addAttribute("vmfreqmin", sysop.getSystemValue("vmfreqmin"));
+        modelo.addAttribute("vmfreqmax", sysop.getSystemValue("vmfreqmax"));
+        modelo.addAttribute("vmmemval", sysop.getSystemValue("vmmemval"));
+        modelo.addAttribute("vmmemmin", sysop.getSystemValue("vmmemmin"));
+        modelo.addAttribute("vmmemmax", sysop.getSystemValue("vmmemmax"));
         //VMs para controlar (y cabeceras), si tiene
         modelo.addAttribute("vmControlHeader", new String[]{"Uuid", "Cores", "Memory (GiB)", "Disk space (GiB)", "Operations"});
         if(grupo != null)

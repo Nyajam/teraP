@@ -650,24 +650,32 @@
 
         <div th:if="${Ntag[1]}=='14'" class="pageTag"> <!--Requests controls-->
           <div class="floatsBlocks">
-            <h3>Default options</h3>
-            <table style="border: 1px solid black">
-              <tr>
-                <th:block th:each="header : ${logHeaders}">
-                  <th th:utext="${header}"></th>
-                </th:block>
-              </tr>
-              <th:block th:each="row : ${log}">
-                <tr>
-                  <td th:utext="${row.vhost}"></td>
-                  <td th:utext="${row.date}"></td>
-                  <td th:utext="${row.message}"></td>
-                </tr>
-              </th:block>
-            </table>
+            <h3>Default request options</h3>
+            <form method="post" action="/admin/vms" onsubmit="return confirm('Are you sure change the request default values?')">
+              A new request has:<br><br>
+              Minimun cores:<br>
+              <input type="number" th:value="${vmcoreminValue}" name="vmcoreminValue"><br><br>
+              Minimun frequency processor:<br>
+              <input type="number" th:value="${vmfreqminValue}" name="vmfreqminValue"><br><br>
+              Minimun RAM (in GB):<br>
+              <input type="number" th:value="${vmmemminValue}" name="vmmemminValue"><br><br>
+              Default cores:<br>
+              <input type="number" th:value="${vmcorevalValue}" name="vmcorevalValue"><br><br>
+              Default frequency processor:<br>
+              <input type="number" th:value="${vmfreqvalValue}" name="vmfreqvalValue"><br><br>
+              Default RAM (in GB):<br>
+              <input type="number" th:value="${vmmemvalValue}" name="vmmemvalValue"><br><br>
+              Maximun cores:<br>
+              <input type="number" th:value="${vmcoremaxValue}" name="vmcoremaxValue"><br><br>
+              Maximun frequency processor:<br>
+              <input type="number" th:value="${vmfreqmaxValue}" name="vmfreqmaxValue"><br><br>
+              Maximun RAM (in GB):<br>
+              <input type="number" th:value="${vmmemmaxValue}" name="vmmemmaxValue"><br><br>
+              <input type="submit" value="save values">
+            </form>
           </div>
         </div>
-        
+
       </article>
     </th:block>
   </section>
