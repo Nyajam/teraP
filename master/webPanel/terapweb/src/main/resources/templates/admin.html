@@ -517,6 +517,62 @@
             </form>
           </div>
         </div>
+        <div th:if="${Ntag[1]}=='11'" class="pageTag"> <!-- Webpanel options -->
+          <div class="floatsBlocks">
+            <h3>Options of web panel</h3>
+            <form method="post" action="/admin/webpanel">
+              Title for the web:<br>
+              <input type="text" name="newTitle" th:value="${title}"><br><br>
+              Description for the web:<br>
+              <input type="text" name="newDescription" th:value="${generalPageDescription}"><br><br>
+              A URL's logo for the web:<br>
+              <input type="url" name="newLogoUrl" th:value="${logoUrl}"><br><br>
+              Color's head for the web:<br>
+              <input type="color" name="newColorHead" th:value="${colorHead}"><br><br>
+              Color's box for the web:<br>
+              <input type="color" name="newColorBox" th:value="${colorBox}"><br><br>
+              Color's buttons for the web:<br>
+              <input type="color" name="newColorBTN" th:value="${colorBTN}"><br><br>
+              Color's background for the web:<br>
+              <input type="color" name="newColorBackground" th:value="${colorBackground}"><br><br>
+              Color's tags bar for the web:<br>
+              <input type="color" name="newColorTags" th:value="${colorTags}"><br><br>
+              <input type="submit" value="Save options">
+            </form>
+          </div>
+          <div class="floatsBlocks">
+            <h3>New help page link</h3>
+            <form action="/admin/webpanel" method="post">
+              Name of help page:<br>
+              <input type="text" name="newHelpLinkName"><br><br>
+              Link of help page:<br>
+              <input type="text" name="newHelpLinkLink"><br><br>
+              <input type="submit" value="CREATE">
+            </form>
+          </div>
+          <div class="floatsBlocks">
+            <h3>Help page links</h3>
+            <table>
+              <tr>
+                <th>Page name</th>
+                <th>Link</th>
+                <th>DELETE</th>
+              </tr>
+              <th:block th:each="row : ${helpLinks}">
+                <tr>
+                  <td th:utext="${row.name}"></td>
+                  <td th:utext="${row.link}"></td>
+                  <td>
+                    <form action="/admin/webpanel" method="post" onsubmit="return confirm('Are you sure? This action deleting this help link')">
+                      <input type="hidden" name="helpToDelete" th:value="${row.name}">
+                      <input style="color: red;" type="submit" value="DELETE">
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
         <div th:if="${Ntag[1]}=='12'" class="pageTag"> <!-- System graphics general -->
           <div class="floatsBlocks">
             <h3>General data</h3>
@@ -591,6 +647,27 @@
             getDataToGraphics("storagesSpace", "Storage ocupation (GiB)", "storagesOcupationPlot", "pie", "v")
           </script>
         </div>
+
+        <div th:if="${Ntag[1]}=='14'" class="pageTag"> <!--Requests controls-->
+          <div class="floatsBlocks">
+            <h3>Default options</h3>
+            <table style="border: 1px solid black">
+              <tr>
+                <th:block th:each="header : ${logHeaders}">
+                  <th th:utext="${header}"></th>
+                </th:block>
+              </tr>
+              <th:block th:each="row : ${log}">
+                <tr>
+                  <td th:utext="${row.vhost}"></td>
+                  <td th:utext="${row.date}"></td>
+                  <td th:utext="${row.message}"></td>
+                </tr>
+              </th:block>
+            </table>
+          </div>
+        </div>
+        
       </article>
     </th:block>
   </section>

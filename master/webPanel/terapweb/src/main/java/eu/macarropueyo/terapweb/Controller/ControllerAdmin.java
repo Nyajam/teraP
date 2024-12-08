@@ -500,8 +500,44 @@ public class ControllerAdmin
     }
 
     @RequestMapping("/admin/webpanel")
-    public String webpanelPage(Model modelo, Authentication sesion)
+    public String webpanelPage(Model modelo, Authentication sesion,
+        Optional<String> newTitle,
+        Optional<String> newDescription,
+        Optional<String> newLogoUrl,
+        Optional<String> newColorHead,
+        Optional<String> newColorBox,
+        Optional<String> newColorBTN,
+        Optional<String> newColorBackground,
+        Optional<String> newColorTags,
+        Optional<String> helpToDelete,
+        Optional<String> newHelpLinkName,
+        Optional<String> newHelpLinkLink)
     {
+        if(newTitle.isPresent() && newDescription.isPresent() && newLogoUrl.isPresent() && newColorHead.isPresent()
+            && newColorBox.isPresent() && newColorBTN.isPresent() && newColorBackground.isPresent() && newColorTags.isPresent())
+        {
+            sysop.setSystemValue("title", newTitle.get());
+            sysop.setSystemValue("generalPageDescription", newDescription.get());
+            sysop.setSystemValue("logoUrl", newLogoUrl.get());
+            sysop.setSystemValue("colorHead", newColorHead.get());
+            sysop.setSystemValue("colorBox", newColorBox.get());
+            sysop.setSystemValue("colorBTN", newColorBTN.get());
+            sysop.setSystemValue("colorBackground", newColorBackground.get());
+            sysop.setSystemValue("colorTags", newColorTags.get());
+        }
+        if(helpToDelete.isPresent())
+        {
+            HelpRows toRemove = sysop.getHelpLink(helpToDelete.get());
+            if(toRemove != null)
+                sysop.removeHelpLink(toRemove);
+        }
+        if(newHelpLinkLink.isPresent() && newHelpLinkName.isPresent())
+        {
+            HelpRows toCreate = new HelpRows(newHelpLinkName.get(), newHelpLinkLink.get());
+            sysop.addHelpLink(toCreate);
+        }
+        
+        modelo.addAttribute("helpLinks",sysop.getAllHelpLinks());
         comun(modelo, sesion);
         chargeTags(modelo, sesion, 5);
         return "admin";
