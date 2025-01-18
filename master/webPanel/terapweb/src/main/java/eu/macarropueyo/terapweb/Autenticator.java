@@ -35,6 +35,7 @@ public class Autenticator implements UserDetailsService
 		if(!usuario.isEnable())
 			throw new UsernameNotFoundException("User lock by administartor.");
         String passwd=passwordEncoder.encode(usuario.getPassword()).toString();
+		//String passwd=usuario.getPassword();
         List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
         roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 		if(usuario.isRoot())

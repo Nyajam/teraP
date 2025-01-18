@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import eu.macarropueyo.terapweb.Model.*;
@@ -18,6 +19,8 @@ public class UserOperation
     private SystemOperation sysop;
     @Autowired
     private GrouppOperation grpop;
+    @Autowired
+	private PasswordEncoder passwordEncoder;
 
     /**
      * Create a user with random password.
@@ -112,10 +115,11 @@ public class UserOperation
      * @param user
      * @param pass
      */
-    public void updatePassword(User user, String pass)
+    public void uupdatePassword(User user, String pass)
     {
         if(pass.contains("\""))
             return;
+        //user.setPassword(passwordEncoder.encode(pass).toString());
         user.setPassword(pass);
         userRepo.save(user);
         sysop.commandToInternalServicePost("/updatepassword/"+user.name, "{\"passwd\":\""+pass+"\"}"); //Expand the password for other services
