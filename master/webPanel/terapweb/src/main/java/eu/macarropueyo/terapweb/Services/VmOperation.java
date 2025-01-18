@@ -25,17 +25,24 @@ public class VmOperation
 
     /**
      * Create a VM without definition
-     * @param group
-     * @param name
-     * @param cores
-     * @param freq
-     * @param mem in MiB
-     * @param space in GiB
-     * @return The VM
+     * @param group owner of the vm
+     * @param name of the vm (only for the users)
+     * @param cores of CPU of the vm
+     * @param freq of CPU of the vm
+     * @param mem RAM of the vm in MiB
+     * @param space disk of the vm in GiB
+     * @return The VM, null if had a problem
      */
     public VM newVM(Groupp group, String name, int cores, int freq, int mem, int space)
     {
-        return vmRepo.save(new VM(group, sysop.getUuid(), name, cores, freq, mem));
+        if(group == null || name == null || cores < 0 || freq < 0 || mem < 0 || space < 0)
+            return null;
+        String uuid = sysop.getUuid();
+        if(uuid == null)
+            return null;
+        if(uuid.equals(""))
+            return null;
+        return vmRepo.save(new VM(group, uuid, name, cores, freq, mem));
     }
 
     /**
@@ -55,7 +62,8 @@ public class VmOperation
      */
     public void shutdown(VM vm)
     {
-        sysop.commandToInternalService("/shutdownvm/"+vm.getUuid());
+        if(vm != null)
+            sysop.commandToInternalService("/shutdownvm/"+vm.getUuid());
     }
 
     /**
@@ -64,7 +72,8 @@ public class VmOperation
      */
     public void shutdownNow(VM vm)
     {
-        sysop.commandToInternalService("/forceshutdownvm/"+vm.getUuid());
+        if(vm != null)
+            sysop.commandToInternalService("/forceshutdownvm/"+vm.getUuid());
     }
 
     /**
@@ -73,7 +82,8 @@ public class VmOperation
      */
     public void restart(VM vm)
     {
-        sysop.commandToInternalService("/restartvm/"+vm.getUuid());
+        if(vm != null)
+            sysop.commandToInternalService("/restartvm/"+vm.getUuid());
     }
 
     /**
@@ -82,7 +92,8 @@ public class VmOperation
      */
     public void start(VM vm)
     {
-        sysop.commandToInternalService("/startvm/"+vm.getUuid());
+        if(vm != null)
+            sysop.commandToInternalService("/startvm/"+vm.getUuid());
     }
 
     /**
@@ -105,6 +116,7 @@ public class VmOperation
      * Define a undefined VM
      * @param vm an undefine vm
      * @param space size of disk
+     * @return true if all it's ok else false
      */
     public boolean define(VM vm, int space)
     {
@@ -118,12 +130,13 @@ public class VmOperation
      * @param vm an undefine vm
      * @param host an vhost to define the vm
      * @param space size of disk
+     * @return true if all it's ok else false
      */
     public boolean define(VM vm, Vhost host, int space)
     {
-        if(vm == null || space < 0)
+        if(vm == null || space < 0 || host == null)
             return false;
-        return sysop.commandToInternalService("/definevmvh/"+host.ip+"/"+vm.getUuid()+"/"+space) != null; ///definevmvh/vhost/<uuid>/<disk>
+        return sysop.commandToInternalService("/definevmvh/"+host.ip+"/"+vm.getUuid()+"/"+space) != null;
     }
 
     /**
@@ -139,11 +152,13 @@ public class VmOperation
 
     /**
      * Find a VM by your uuid
-     * @param uuid
-     * @return
+     * @param uuid of the vm
+     * @return null if had a proble
      */
     public VM findByUUID(String uuid)
     {
+        if(uuid == null)
+            return null;
         Optional<VM> tmp = vmRepo.findByUuid(uuid);
         if(tmp.isEmpty())
             return null;
@@ -157,6 +172,8 @@ public class VmOperation
      */
     public void newExpansion(VM vm, int size)
     {
+        if(vm == null || size < 0)
+            return;
         if(vm.expansion != null)
             return;
         vm.expansion = new DiskExpansion(size, vm);
@@ -186,7 +203,7 @@ public class VmOperation
      * Accept a request for new disk
      * @param id The id of the request
      */
-    public void acceptDisExpansion(long id)
+    public void acceptDiskExpansion(long id)
     {
         Optional<DiskExpansion> tmp = deRepo.findById(id);
         if(tmp.isPresent())
@@ -211,7 +228,8 @@ public class VmOperation
      */
     public void remake(VM vm)
     {
-        sysop.commandToInternalService("/remakevm/"+vm.getUuid());
+        if(vm != null)
+            sysop.commandToInternalService("/remakevm/"+vm.getUuid());
     }
 
     /**

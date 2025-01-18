@@ -367,7 +367,7 @@ public class ControllerAdmin
             if(denegateExpansion.isPresent())
                 vmop.refuseDisExpansion(expansionId.get());
             else if(grantExpansion.isPresent())
-                vmop.acceptDisExpansion(expansionId.get());
+                vmop.acceptDiskExpansion(expansionId.get());
         }
         if(uuid.isPresent())
         {
