@@ -115,7 +115,7 @@ public class UserOperation
      * @param user
      * @param pass
      */
-    public void uupdatePassword(User user, String pass)
+    public void updatePassword(User user, String pass)
     {
         if(pass.contains("\""))
             return;

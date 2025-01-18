@@ -2,18 +2,14 @@ package eu.macarropueyo.terapweb.Services;
 
 import java.util.Optional;
 import java.util.Random;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 import eu.macarropueyo.terapweb.Repository.HelpRowsRepository;
 import eu.macarropueyo.terapweb.Repository.SystemRepository;
@@ -184,95 +180,84 @@ public class SystemOperation
     }
 
     /**
+     * Change allocation criteria.
+     * @param order new criteria
+     */
+    public void setAllocationOrder(String order)
+    {
+        setSystemValue("allocationOrder", order);
+        commandToInternalService("/allocationoder/"+order);
+    }
+
+    /**
+     * Get current allocation criteria.
+     * @return
+     */
+    public String getAllocationOrder()
+    {
+        return getSystemValue("allocationOrder");
+    }
+
+    /**
+     * Change the algorithm to sort the requests queue.
+     * @param mode
+     */
+    public void setQueueMode(String mode)
+    {
+        setSystemValue("queueMode", mode);
+        commandToInternalService("/queuemode/"+mode);
+    }
+
+    /**
+     * Get current algorithm to sort the requests queue.
+     * @return
+     */
+    public String getQueueMode()
+    {
+        return getSystemValue("queueMode");
+    }
+
+    /**
      * Send a GET request to internal service
      * @param getPath GET request (only the path and values, like "/operation/param1/param2")
      * @return Response of the internal service (null if have problems)
      */
     public String commandToInternalService(String getPath)
     {
-        HttpURLConnection connection = null;
-        String address = "http://localhost:5000";
+        //https://docs.spring.io/spring-framework/reference/integration/rest-clients.html
+        RestClient client = RestClient.builder().baseUrl("http://localhost:5000").build();
+        String response;
         try
         {
-            URL url = new URL(address+getPath);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setUseCaches(false);
-
-            //Get Response  
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-            String line;
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
-            }
-            rd.close();
-            return response.toString();
+            response = client.get().uri(getPath).retrieve().body(String.class);
         }
-        catch (Exception e)
+        catch(Exception e)
         {
-            e.printStackTrace();
-            return null;
+            response = null;
         }
-        finally {
-            if (connection != null)
-                connection.disconnect();
-        }
+        return response;
     }
 
     /**
      * Send a POST request to internal service
      * @param postPath GET request (only the path and values, like "/operation/param1/param2")
-     * @param post POST parameters, JSON, like "{'param':'value','param2':'value2'}" (dont use ' )
+     * @param post POST parameters, JSON, like {"param":"value","param2":"value2"}
      * @return Response of the internal service (null if have problems)
      */
     public String commandToInternalServicePost(String postPath, String post)
     {
-        //https://www.digitalocean.com/community/tutorials/java-httpurlconnection-example-java-http-request-get-post
-        HttpURLConnection connection = null;
-        String address = "http://localhost:5000";
+        //https://docs.spring.io/spring-framework/reference/integration/rest-clients.html
+        //https://dev.to/agustinventura/usando-spring-boot-restclient-11og
+        RestClient client = RestClient.builder().baseUrl("http://localhost:5000").build();
+        String response;
         try
         {
-            URL url = new URL(address+postPath);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("User-Agent", "teraPwebpanel");
-            connection.setRequestProperty("Content-Type", "application/json");
-            //connection.setRequestProperty("Expect", "100-continue");
-
-            // For POST only - START
-            connection.setDoOutput(true);
-            OutputStream os = connection.getOutputStream();
-            os.write(post.getBytes());
-            os.flush();
-            os.close();
-            // For POST only - END
-
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK)
-            {
-                InputStream is = connection.getInputStream();
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    response.append(line);
-                    response.append('\r');
-                }
-                rd.close();
-                return response.toString();
-            }
-            else
-                return null;
+            response = client.post().uri(postPath).contentType(MediaType.APPLICATION_JSON).accept(MediaType.TEXT_PLAIN).body(post).retrieve().body(String.class);
         }
-        catch (Exception e)
+        catch(Exception e)
         {
-            e.printStackTrace();
-            return null;
+            response = null;
         }
-        finally {
-            if (connection != null)
-                connection.disconnect();
-        }
+        return response;
 	}
 }

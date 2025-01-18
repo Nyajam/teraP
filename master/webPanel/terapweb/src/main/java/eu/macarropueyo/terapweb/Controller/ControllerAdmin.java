@@ -324,10 +324,7 @@ public class ControllerAdmin
     Optional<String> allocationOrder)
     {
         if(allocationOrder.isPresent())
-        {
-            sysop.setSystemValue("allocationOrder", allocationOrder.get());
-            sysop.commandToInternalService("/allocationoder/"+allocationOrder.get());
-        }
+            sysop.setAllocationOrder(allocationOrder.get());
         if(queueMode.isPresent())
         {
             if(useFrequency.isPresent())
@@ -335,16 +332,9 @@ public class ControllerAdmin
             else
                 sysop.setSystemValue("useFrequency", "0");
             if(queueMode.get().equals("auto"))
-            {
-                sysop.setSystemValue("queueMode", "auto");
-                sysop.commandToInternalService("/queuemode/auto");
-            }
+                sysop.setQueueMode("auto");
             if(queueMode.get().equals("manual"))
-            {
-                sysop.setSystemValue("queueMode", "manual");
-                sysop.commandToInternalService("/queuemode/manual");
-                
-            }
+                sysop.setQueueMode("manual");
         }
         if(vmcoreminValue.isPresent() && vmfreqminValue.isPresent() && vmmemminValue.isPresent() && 
             vmcorevalValue.isPresent() && vmfreqvalValue.isPresent() && vmmemvalValue.isPresent() && 
@@ -377,9 +367,9 @@ public class ControllerAdmin
                 String diskSize = sysop.getSystemValue("vmdefaultspace");
                 try
                 {
-                    if(sysop.getSystemValue("queueMode").equals("manual"))
+                    if(sysop.getQueueMode().equals("manual"))
                     {
-                        if(vmToVhost.isPresent() && sysop.getSystemValue("allocationOrder").equals("manual"))
+                        if(vmToVhost.isPresent() && sysop.getAllocationOrder().equals("manual"))
                         {
                             Vhost vh = vhop.getVhost(vmToVhost.get());
                             if(vh == null)
@@ -442,8 +432,8 @@ public class ControllerAdmin
         modelo.addAttribute("freeDisk", "Free disk: "+stgop.spaceFreeInAll()+"GB");
         modelo.addAttribute("requestsDisk", vmop.getDiskExpansions());
         modelo.addAttribute("vmControl", vmop.getAllVms());
-        modelo.addAttribute("modeState", sysop.getSystemValue("queueMode"));
-        modelo.addAttribute("allocationState", sysop.getSystemValue("allocationOrder"));
+        modelo.addAttribute("modeState", sysop.getQueueMode());
+        modelo.addAttribute("allocationState", sysop.getAllocationOrder());
         if(sysop.getSystemValue("useFrequency").equals("1"))
             modelo.addAttribute("frequencyState", true);
         comun(modelo, sesion);
