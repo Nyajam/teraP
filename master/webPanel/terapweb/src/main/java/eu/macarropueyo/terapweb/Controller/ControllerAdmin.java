@@ -323,6 +323,7 @@ public class ControllerAdmin
     Optional<String> vmcoremaxValue,
     Optional<String> vmfreqmaxValue,
     Optional<String> vmmemmaxValue,
+    Optional<String> vmdefaultspaceValue,
     Optional<String> queueMode,
     Optional<Boolean> useFrequency,
     Optional<String> allocationOrder)
@@ -352,7 +353,8 @@ public class ControllerAdmin
         }
         if(vmcoreminValue.isPresent() && vmfreqminValue.isPresent() && vmmemminValue.isPresent() && 
             vmcorevalValue.isPresent() && vmfreqvalValue.isPresent() && vmmemvalValue.isPresent() && 
-            vmcoremaxValue.isPresent() && vmfreqmaxValue.isPresent() && vmmemmaxValue.isPresent())
+            vmcoremaxValue.isPresent() && vmfreqmaxValue.isPresent() && vmmemmaxValue.isPresent() &&
+            vmdefaultspaceValue.isPresent())
         {
             sysop.setSystemValue("vmcoremin", vmcoreminValue.get());
             sysop.setSystemValue("vmfreqmin", vmfreqminValue.get());
@@ -363,6 +365,7 @@ public class ControllerAdmin
             sysop.setSystemValue("vmcoremax", vmcoremaxValue.get());
             sysop.setSystemValue("vmfreqmax", vmfreqmaxValue.get());
             sysop.setSystemValue("vmmemmax", vmmemmaxValue.get());
+            sysop.setSystemValue("vmdefaultspace", vmdefaultspaceValue.get());
         }
         if(expansionId.isPresent())
         {
@@ -376,27 +379,35 @@ public class ControllerAdmin
             VM victima = vmop.findByUUID(uuid.get());
             if(grantVm.isPresent())
             {
-                if(sysop.getSystemValue("queueMode").equals("manual"))
+                String diskSize = sysop.getSystemValue("vmdefaultspace");
+                try
                 {
-                    if(vmToVhost.isPresent() && sysop.getSystemValue("allocationOrder").equals("manual"))
+                    if(sysop.getSystemValue("queueMode").equals("manual"))
                     {
-                        Vhost vh = vhop.getVhost(vmToVhost.get());
-                        if(vh == null)
-                            modelo.addAttribute("msgOfSystem", "The host doesn't exist.");
+                        if(vmToVhost.isPresent() && sysop.getSystemValue("allocationOrder").equals("manual"))
+                        {
+                            Vhost vh = vhop.getVhost(vmToVhost.get());
+                            if(vh == null)
+                                modelo.addAttribute("msgOfSystem", "The host doesn't exist.");
+                            else
+                            {
+                                if(!vmop.define(victima, vh, Integer.parseInt(diskSize)))
+                                    modelo.addAttribute("msgOfSystem", "Error to definition the VM.");
+                            }
+                        }
                         else
                         {
-                            if(!vmop.define(victima, vh, 100))
+                            if(!vmop.define(victima, Integer.parseInt(diskSize)))
                                 modelo.addAttribute("msgOfSystem", "Error to definition the VM.");
                         }
                     }
                     else
-                    {
-                        if(!vmop.define(victima, 100))
-                            modelo.addAttribute("msgOfSystem", "Error to definition the VM.");
-                    }
+                        modelo.addAttribute("msgOfSystem", "Error to definition the VM, the system not be manual.");
                 }
-                else
-                modelo.addAttribute("msgOfSystem", "Error to definition the VM, the system not be manual.");
+                catch(NumberFormatException e)
+                {
+                    modelo.addAttribute("msgOfSystem", "Error to definition the VM, the default disk space have a problem.");
+                }
             }
             else if(mode.isPresent())
             {
@@ -430,6 +441,7 @@ public class ControllerAdmin
         modelo.addAttribute("vmmemvalValue", sysop.getSystemValue("vmmemval"));
         modelo.addAttribute("vmmemminValue", sysop.getSystemValue("vmmemmin"));
         modelo.addAttribute("vmmemmaxValue", sysop.getSystemValue("vmmemmax"));
+        modelo.addAttribute("vmdefaultspaceValue", sysop.getSystemValue("vmdefaultspace"));
         modelo.addAttribute("requests", vmop.requests());
         modelo.addAttribute("freeResources", vhop.getListVhosts());
         modelo.addAttribute("freeDisk", "Free disk: "+stgop.spaceFreeInAll()+"GB");

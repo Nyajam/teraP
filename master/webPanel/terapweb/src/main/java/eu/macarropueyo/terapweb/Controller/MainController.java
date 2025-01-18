@@ -43,6 +43,7 @@ public class MainController
         sysop.setSystemValue("vmmemval", "16");
         sysop.setSystemValue("vmmemmin", "1");
         sysop.setSystemValue("vmmemmax", "128");
+        sysop.setSystemValue("vmdefaultspace", "100");
         sysop.setSystemValue("queueMode", "auto");
         sysop.setSystemValue("useFrequency", "0");
         sysop.setSystemValue("allocationOrder", "auto");
