@@ -117,6 +117,15 @@ public class VM
     }
 
     /**
+     * Get the internal id.
+     * @return the id
+     */
+    public long getId()
+    {
+        return id;
+    }
+
+    /**
      * Define una VM en un espacio especifico
      * @param host
      * @param pool

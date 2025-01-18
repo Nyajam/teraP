@@ -210,9 +210,11 @@
             <h3>Requests in the cluster</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${requestsHeaders}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Applicant</th>
+                <th>Date</th>
+                <th>Cores</th>
+                <th>Memory</th>
+                <th>Status</th>
               </tr>
               <th:block th:each="row : ${requests}">
                 <tr>
@@ -221,10 +223,19 @@
                   <td th:utext="${row.cores}"></td>
                   <td th:utext="${row.mem}"></td>
                   <td>
-                    <form method="post" action="/admin/vms">
-                      <input type="hidden" name="uuid" th:value="${row.uuid}">
-                      <input type="submit" name="grantVm" th:value="${row.status}">
-                    </form>
+                    <th:block th:if="${allocationState} != 'manual'">
+                      <form method="post" action="/admin/vms">
+                        <input type="hidden" name="uuid" th:value="${row.uuid}">
+                        <input type="submit" name="grantVm" th:value="${row.status}">
+                      </form>
+                    </th:block>
+                    <th:block th:if="${allocationState} == 'manual'">
+                      <form method="post" action="/admin/vms" th:onsubmit="|return changePropertieOfList('assignVmTohost${row.id}', 'Introduce the host to allocate.')|">
+                        <input type="hidden" name="uuid" th:value="${row.uuid}">
+                        <input type="hidden" name="vmToVhost" th:id="|assignVmTohost${row.id}|" value="">
+                        <input type="submit" name="grantVm" th:value="${row.status}">
+                      </form>
+                    </th:block>
                   </td>
                 </tr>
               </th:block>
@@ -235,12 +246,13 @@
             <p th:text="${freeDisk}"></p>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${freeResourcesHeaders}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>IP</th>
+                <th>Cores</th>
+                <th>Memory</th>
               </tr>
               <th:block th:each="row : ${freeResources}">
                 <tr>
+                  <td th:utext="${row.ip}"></td>
                   <td th:utext="${row.getNoneUse()[0]}"></td>
                   <td th:utext="${row.getNoneUse()[1]}"></td>
                 </tr>
@@ -672,6 +684,32 @@
               Maximun RAM (in GB):<br>
               <input type="number" th:value="${vmmemmaxValue}" name="vmmemmaxValue"><br><br>
               <input type="submit" value="save values">
+            </form>
+          </div>
+          <div class="floatsBlocks">
+            <h3>Request queue options</h3>
+            <form>
+              Mode:
+              <select name="queueMode">
+                <option th:value="${modeState}" th:utext="${modeState}"></option>
+                <option value="auto">auto</option>
+                <option value="manual">manual</option>
+              </select>
+              <br>
+              <br>
+              <input type="checkbox" name="useFrequency" th:checked="${frequencyState}">
+              Use the frequency to assign the resources
+              <br>
+              <br>
+              Allocation criteria:
+              <select name="allocationOrder">
+                <option th:value="${allocationState}" th:utext="${allocationState}"></option>
+                <option value="auto">auto</option>
+                <option value="manual">manual</option>
+              </select>
+              <br>
+              <br>
+              <input type="submit" value="Apply">
             </form>
           </div>
         </div>

@@ -309,6 +309,7 @@ public class ControllerAdmin
     public String vmsPage(Model modelo, Authentication sesion,
     Optional<String> uuid,
     Optional<String> grantVm,
+    Optional<String> vmToVhost,
     Optional<Long> expansionId,
     Optional<String> denegateExpansion,
     Optional<String> grantExpansion,
@@ -321,8 +322,34 @@ public class ControllerAdmin
     Optional<String> vmmemvalValue,
     Optional<String> vmcoremaxValue,
     Optional<String> vmfreqmaxValue,
-    Optional<String> vmmemmaxValue)
+    Optional<String> vmmemmaxValue,
+    Optional<String> queueMode,
+    Optional<Boolean> useFrequency,
+    Optional<String> allocationOrder)
     {
+        if(allocationOrder.isPresent())
+        {
+            sysop.setSystemValue("allocationOrder", allocationOrder.get());
+            sysop.commandToInternalService("/allocationoder/"+allocationOrder.get());
+        }
+        if(queueMode.isPresent())
+        {
+            if(useFrequency.isPresent())
+                sysop.setSystemValue("useFrequency", "1");
+            else
+                sysop.setSystemValue("useFrequency", "0");
+            if(queueMode.get().equals("auto"))
+            {
+                sysop.setSystemValue("queueMode", "auto");
+                sysop.commandToInternalService("/queuemode/auto");
+            }
+            if(queueMode.get().equals("manual"))
+            {
+                sysop.setSystemValue("queueMode", "manual");
+                sysop.commandToInternalService("/queuemode/manual");
+                
+            }
+        }
         if(vmcoreminValue.isPresent() && vmfreqminValue.isPresent() && vmmemminValue.isPresent() && 
             vmcorevalValue.isPresent() && vmfreqvalValue.isPresent() && vmmemvalValue.isPresent() && 
             vmcoremaxValue.isPresent() && vmfreqmaxValue.isPresent() && vmmemmaxValue.isPresent())
@@ -349,8 +376,27 @@ public class ControllerAdmin
             VM victima = vmop.findByUUID(uuid.get());
             if(grantVm.isPresent())
             {
-                if(!vmop.define(victima, 100))
-                    modelo.addAttribute("msgOfSystem", "Error to definition the VM.");
+                if(sysop.getSystemValue("queueMode").equals("manual"))
+                {
+                    if(vmToVhost.isPresent() && sysop.getSystemValue("allocationOrder").equals("manual"))
+                    {
+                        Vhost vh = vhop.getVhost(vmToVhost.get());
+                        if(vh == null)
+                            modelo.addAttribute("msgOfSystem", "The host doesn't exist.");
+                        else
+                        {
+                            if(!vmop.define(victima, vh, 100))
+                                modelo.addAttribute("msgOfSystem", "Error to definition the VM.");
+                        }
+                    }
+                    else
+                    {
+                        if(!vmop.define(victima, 100))
+                            modelo.addAttribute("msgOfSystem", "Error to definition the VM.");
+                    }
+                }
+                else
+                modelo.addAttribute("msgOfSystem", "Error to definition the VM, the system not be manual.");
             }
             else if(mode.isPresent())
             {
@@ -384,15 +430,17 @@ public class ControllerAdmin
         modelo.addAttribute("vmmemvalValue", sysop.getSystemValue("vmmemval"));
         modelo.addAttribute("vmmemminValue", sysop.getSystemValue("vmmemmin"));
         modelo.addAttribute("vmmemmaxValue", sysop.getSystemValue("vmmemmax"));
-        modelo.addAttribute("requestsHeaders", new String[]{"Applicant", "Date", "Cores", "Memory", "Status"});
         modelo.addAttribute("requests", vmop.requests());
-        modelo.addAttribute("freeResourcesHeaders", new String[]{"Cores", "Memory"});
         modelo.addAttribute("freeResources", vhop.getListVhosts());
         modelo.addAttribute("freeDisk", "Free disk: "+stgop.spaceFreeInAll()+"GB");
         modelo.addAttribute("requestsDiskHeaders", new String[]{"Extra space (GiB)", "Solicitant", "Options"});
         modelo.addAttribute("requestsDisk", vmop.getDiskExpansions());
         modelo.addAttribute("vmControlHeader", new String[]{"Uuid", "Owner", "Status", "Cores", "Memory (GiB)", "Disk (GiB)", "Date", "Options"});
         modelo.addAttribute("vmControl", vmop.getAllVms());
+        modelo.addAttribute("modeState", sysop.getSystemValue("queueMode"));
+        modelo.addAttribute("allocationState", sysop.getSystemValue("allocationOrder"));
+        if(sysop.getSystemValue("useFrequency").equals("1"))
+            modelo.addAttribute("frequencyState", true);
         comun(modelo, sesion);
         chargeTags(modelo, sesion, 3);
         return "admin";

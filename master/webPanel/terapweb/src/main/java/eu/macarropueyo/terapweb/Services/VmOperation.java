@@ -103,13 +103,27 @@ public class VmOperation
 
     /**
      * Define a undefined VM
-     * @param vm
+     * @param vm an undefine vm
+     * @param space size of disk
      */
     public boolean define(VM vm, int space)
     {
         if(vm == null || space < 0)
             return false;
         return sysop.commandToInternalService("/definevm/"+vm.getUuid()+"/"+space) != null;
+    }
+
+    /**
+     * Define a undefined VM in to a especific vhost
+     * @param vm an undefine vm
+     * @param host an vhost to define the vm
+     * @param space size of disk
+     */
+    public boolean define(VM vm, Vhost host, int space)
+    {
+        if(vm == null || space < 0)
+            return false;
+        return sysop.commandToInternalService("/definevmvh/"+host.ip+"/"+vm.getUuid()+"/"+space) != null; ///definevmvh/vhost/<uuid>/<disk>
     }
 
     /**
