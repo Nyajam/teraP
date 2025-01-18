@@ -51,7 +51,6 @@ public class ControllerHome
         comun(modelo, sesion);
         chargeTags(modelo, sesion, 0);
         comunHome(modelo, sesion);
-        //modelo.addAttribute("msgOfSystem","mensaje a indicar");
         return "home";
     }
 
@@ -92,7 +91,6 @@ public class ControllerHome
         comun(modelo, sesion);
         chargeTags(modelo, sesion, 1);
         comunVms(modelo, sesion, myuser.myGroup);
-        modelo.addAttribute("headersMyShares", new String[]{"Name", "Options"});
         if(myuser.myGroup != null)
             modelo.addAttribute("shares", myuser.myGroup.users);
         modelo.addAttribute("iMaster", true);
@@ -168,9 +166,7 @@ public class ControllerHome
                 else if(vmcore.isPresent() && vmfreq.isPresent() && vmmem.isPresent()) //Crear request de recurso
                     vmop.newVM(group, "", vmcore.get(), vmfreq.get(), vmfreq.get(), 0);
                 modelo.addAttribute("iMaster", true);
-                modelo.addAttribute("headersListUsers", new String[]{"Name", "Options"});
                 modelo.addAttribute("listUsers", group.users);
-                modelo.addAttribute("headersPendingPetitions", new String[]{"Name", "Options"});
                 modelo.addAttribute("pendingPetitions", group.newUsers);
                 chargeTags(modelo, sesion, 3);
             }
@@ -179,7 +175,6 @@ public class ControllerHome
             comunVms(modelo, sesion, group);
         }
         comun(modelo, sesion);
-        modelo.addAttribute("headersGroups", new String[]{"Name", "Options"});
         modelo.addAttribute("groups", myuser.myGroups());
         return "home";
     }
@@ -236,22 +231,16 @@ public class ControllerHome
     private void comunHome(Model modelo, Authentication sesion) //Pendiente de limpiar mierda a otro metodo
     {
         User myuser = useop.getUser(sesion.getName());
-        
-        modelo.addAttribute("headersRequests", new String[]{"Entity", "Date", "CPU", "RAM"}); //Cabecera de la lista de requests
         modelo.addAttribute("vms", vmop.requests()); //Lista de las request ya ordenadas
-        modelo.addAttribute("headersAllGroups", new String[]{"Name", "Users", "Request join"}); //Cabeceras de la lista de grupos
         //Lista de grupos a los que enviar una peticion de union (todos menos el propio)
         List<Groupp> tmp = gpop.getGroups();
         tmp.remove(myuser.myGroup);
         modelo.addAttribute("allGroups", tmp);
-        modelo.addAttribute("headersMyPetition", new String[]{"Group"}); //Cabeceras de mis peticiones a grupos
         modelo.addAttribute("myPetition", myuser.joinToGroups); //Mis peticiones a grupos
     }
 
     private void comunVms(Model modelo, Authentication sesion, Groupp grupo)
     {
-        //Cabecera de la lista de vms solicitadas por el usuario
-        modelo.addAttribute("headersMyRequests", new String[]{"State", "Date", "Cores", "Memory", "Action"});
         //Lista de vms solicitadas por el usuario, si tiene
         if(grupo != null)
             modelo.addAttribute("dataMyRequests", grupo.getRequests());
@@ -265,8 +254,7 @@ public class ControllerHome
         modelo.addAttribute("vmmemval", sysop.getSystemValue("vmmemval"));
         modelo.addAttribute("vmmemmin", sysop.getSystemValue("vmmemmin"));
         modelo.addAttribute("vmmemmax", sysop.getSystemValue("vmmemmax"));
-        //VMs para controlar (y cabeceras), si tiene
-        modelo.addAttribute("vmControlHeader", new String[]{"Uuid", "Cores", "Memory (GiB)", "Disk space (GiB)", "Operations"});
+        //VMs para controlar, si tiene
         if(grupo != null)
             modelo.addAttribute("vmOperate", grupo.getResources());
     }

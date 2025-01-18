@@ -22,9 +22,14 @@
             <h3>List of virtual hosts</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${headers}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Ip</th>
+                <th>Cores</th>
+                <th>Memory</th>
+                <th>Status</th>
+                <th>Last check</th>
+                <th>Occupancy rate</th>
+                <th>Change status</th>
+                <th>Options</th>
               </tr>
               <th:block th:each="row : ${vhosts}">
                 <tr>
@@ -100,9 +105,9 @@
             <h3>Log hosts</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${logHeaders}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Host</th>
+                <th>Date</th>
+                <th>Message</th>
               </tr>
               <th:block th:each="row : ${log}">
                 <tr>
@@ -121,9 +126,13 @@
             <h3>List of storages</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${headers}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Ip</th>
+                <th>Space</th>
+                <th>Status</th>
+                <th>Space free</th>
+                <th>Occupancy rate</th>
+                <th>Change status</th>
+                <th>Options</th>
               </tr>
               <th:block th:each="row : ${storages}">
                 <tr>
@@ -189,9 +198,9 @@
             <h3>Log storages</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${logHeaders}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Host</th>
+                <th>Date</th>
+                <th>Message</th>
               </tr>
               <th:block th:each="row : ${log}">
                 <tr>
@@ -263,9 +272,9 @@
             <h3>Requests of more space</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${requestsDiskHeaders}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Extra space (GiB)</th>
+                <th>Solicitant</th>
+                <th>Options</th>
               </tr>
               <th:block th:each="row : ${requestsDisk}">
                 <tr>
@@ -289,9 +298,14 @@
             <h3>Requests in the cluster</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${vmControlHeader}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Uuid</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <th>Cores</th>
+                <th>Memory (GiB)</th>
+                <th>Disk (GiB)</th>
+                <th>Date</th>
+                <th>Options</th>
               </tr>
               <th:block th:each="row : ${vmControl}">
                 <tr>
@@ -324,9 +338,17 @@
             <h3>Users list</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${headers}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Name</th>
+                <th>Mail</th>
+                <th>Admin</th>
+                <th>Status</th>
+                <th>Max VMs</th>
+                <th>Max cores</th>
+                <th>Max mem</th>
+                <th>Max disk</th>
+                <th>Password</th>
+                <th>Shares</th>
+                <th>Options</th>
               </tr>
               <th:block th:each="row : ${users}">
                 <tr>

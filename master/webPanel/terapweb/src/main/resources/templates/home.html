@@ -22,9 +22,10 @@
             <h3>Global requests</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${headersRequests}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Entity</th>
+                <th>Date</th>
+                <th>CPU</th>
+                <th>RAM</th>
               </tr>
               <th:block th:each="row : ${vms}">
                 <tr>
@@ -45,9 +46,9 @@
             <h3>All groups</h3>
             <table style="border: 1px solid black; text-align: center;">
               <tr>
-                <th:block th:each="header : ${headersAllGroups}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Name</th>
+                <th>Users</th>
+                <th>Request join</th>
               </tr>
               <th:block th:each="row : ${allGroups}">
                 <tr>
@@ -70,9 +71,7 @@
             <h3>My petitions for groups</h3>
             <table style="border: 1px solid black; text-align: center;">
               <tr>
-                <th:block th:each="header : ${headersMyPetition}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Group</th>
               </tr>
               <th:block th:each="row : ${myPetition}">
                 <tr>
@@ -89,9 +88,11 @@
             <table style="border: 1px solid black">
               <tbody>
                 <tr>
-                  <th:block th:each="header : ${headersMyRequests}">
-                    <th th:utext="${header}"></th>
-                  </th:block>
+                  <th>State</th>
+                  <th>Date</th>
+                  <th>Cores</th>
+                  <th>Memory</th>
+                  <th>Action</th>
                 </tr>
                 <th:block th:each="request : ${dataMyRequests}">
                   <tr>
@@ -132,9 +133,8 @@
             <table style="border: 1px solid black">
               <tbody>
                 <tr>
-                  <th:block th:each="header : ${headersMyShares}">
-                    <th th:utext="${header}"></th>
-                  </th:block>
+                  <th>Name</th>
+                  <th>Options</th>
                 </tr>
                 <th:block th:each="user : ${shares}">
                   <tr>
@@ -158,9 +158,11 @@
             <table style="border: 1px solid black;">
               <tbody>
                 <tr>
-                  <th:block th:each="header : ${vmControlHeader}">
-                    <th th:utext="${header}"></th>
-                  </th:block>
+                  <th>Uuid</th>
+                  <th>Cores</th>
+                  <th>Memory (GiB)</th>
+                  <th>Disk space (GiB)</th>
+                  <th>Operations</th>
                 </tr>
                 <th:block th:each="vme : ${vmOperate}">
                   <tr>
@@ -192,9 +194,8 @@
             <h3>My Groups</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${headersGroups}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Name</th>
+                <th>Options</th>
               </tr>
               <th:block th:each="row : ${groups}">
                 <tr>
@@ -220,9 +221,8 @@
             <h3>Users of the group</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${headersListUsers}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Name</th>
+                <th>Options</th>
               </tr>
               <th:block th:each="row : ${listUsers}">
                 <tr>
@@ -242,9 +242,8 @@
             <h3>Pending petitions</h3>
             <table style="border: 1px solid black">
               <tr>
-                <th:block th:each="header : ${headersPendingPetitions}">
-                  <th th:utext="${header}"></th>
-                </th:block>
+                <th>Name</th>
+                <th>Options</th>
               </tr>
               <th:block th:each="row : ${pendingPetitions}">
                 <tr>
@@ -270,9 +269,11 @@
             <table style="border: 1px solid black">
               <tbody>
                 <tr>
-                  <th:block th:each="header : ${headersMyRequests}">
-                    <th th:utext="${header}"></th>
-                  </th:block>
+                  <th>State</th>
+                  <th>Date</th>
+                  <th>Cores</th>
+                  <th>Memory</th>
+                  <th>Action</th>
                 </tr>
                 <th:block th:each="request : ${dataMyRequests}">
                   <tr>

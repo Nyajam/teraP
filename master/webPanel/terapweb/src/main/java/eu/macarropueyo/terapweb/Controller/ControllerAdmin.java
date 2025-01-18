@@ -61,7 +61,6 @@ public class ControllerAdmin
             avgStg += stg.ratio();
         }
         avgStg = avgStg/storages.size();
-        modelo.addAttribute("tituloGrafica", "Occupate rate of storages");
         modelo.addAttribute("stgs", storages);
         modelo.addAttribute("allSpace", allSpace);
         modelo.addAttribute("spaceInUse", allSpace-spaceFree);
@@ -222,8 +221,6 @@ public class ControllerAdmin
                 }
             }
         }
-        modelo.addAttribute("headers", new String[]{"Ip", "Cores", "Memory", "Status", "Last check", "Occupancy rate", "Change status", "Options"});
-        modelo.addAttribute("logHeaders", new String[]{"Host", "Date", "Message"});
         modelo.addAttribute("log", vhop.getLog(new Date(new java.util.Date().getTime()-(24*3600000*7)))); //Todos los de la semana
         modelo.addAttribute("vhosts", vhop.getListVhosts());
         comun(modelo, sesion);
@@ -296,9 +293,7 @@ public class ControllerAdmin
                     stgop.updateIp(victima, newIpStorage.get());
             }
         }
-        modelo.addAttribute("headers", new String[]{"Ip", "Space", "Status", "Space free", "Occupancy rate", "Change status", "Options"});
         modelo.addAttribute("storages", stgop.getAllStorages());
-        modelo.addAttribute("logHeaders", new String[]{"Host", "Date", "Message"});
         modelo.addAttribute("log", stgop.getLog(new Date(new java.util.Date().getTime()-(24*3600000*7)))); //Todos los de la semana
         comun(modelo, sesion);
         chargeTags(modelo, sesion, 1);
@@ -445,9 +440,7 @@ public class ControllerAdmin
         modelo.addAttribute("requests", vmop.requests());
         modelo.addAttribute("freeResources", vhop.getListVhosts());
         modelo.addAttribute("freeDisk", "Free disk: "+stgop.spaceFreeInAll()+"GB");
-        modelo.addAttribute("requestsDiskHeaders", new String[]{"Extra space (GiB)", "Solicitant", "Options"});
         modelo.addAttribute("requestsDisk", vmop.getDiskExpansions());
-        modelo.addAttribute("vmControlHeader", new String[]{"Uuid", "Owner", "Status", "Cores", "Memory (GiB)", "Disk (GiB)", "Date", "Options"});
         modelo.addAttribute("vmControl", vmop.getAllVms());
         modelo.addAttribute("modeState", sysop.getSystemValue("queueMode"));
         modelo.addAttribute("allocationState", sysop.getSystemValue("allocationOrder"));
@@ -520,7 +513,6 @@ public class ControllerAdmin
                 }
             }
         }
-        modelo.addAttribute("headers", new String[]{"Name", "Mail", "Admin", "Status", "Max VMs", "Max cores", "Max mem", "Max disk", "Password", "Shares", "Options"});
         modelo.addAttribute("users", useop.getAllUsers());
         List<Groupp> shares = grpop.getGroups(); //Personal areas
         shares.removeIf(a -> !a.personalArea());
