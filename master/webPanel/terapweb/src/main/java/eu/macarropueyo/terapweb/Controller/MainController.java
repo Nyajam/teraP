@@ -18,7 +18,7 @@ public class MainController
     private SystemOperation sysop;
 
     @RequestMapping("/start")
-    public String test(Model modelo, Authentication sesion)
+    public String startPage(Model modelo, Authentication sesion)
     {
         if(sysop.getSystemValue("start").length() > 0)
             return "empty";
