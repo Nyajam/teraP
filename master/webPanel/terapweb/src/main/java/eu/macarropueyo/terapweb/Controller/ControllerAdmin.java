@@ -148,6 +148,7 @@ public class ControllerAdmin
         @RequestParam Optional<Integer> mem,
         @RequestParam Optional<Integer> freq,
         @RequestParam Optional<String> userad,
+        @RequestParam Optional<String> useradpassword,
         @RequestParam Optional<String> host,
         @RequestParam Optional<String> mode,
         @RequestParam Optional<String> delete,
@@ -156,9 +157,9 @@ public class ControllerAdmin
         @RequestParam Optional<String> newMemHost)
     {
         //Create a vhost
-        if(ip.isPresent() && cores.isPresent() && mem.isPresent() && freq.isPresent() && userad.isPresent())
+        if(ip.isPresent() && cores.isPresent() && mem.isPresent() && freq.isPresent() && userad.isPresent() && useradpassword.isPresent())
         {
-            if(vhop.addVhost(ip.get(), cores.get(), freq.get(), mem.get(), userad.get()) == null)
+            if(vhop.addVhost(ip.get(), cores.get(), freq.get(), mem.get(), userad.get(), useradpassword.get()) == null)
                 modelo.addAttribute("msgOfSystem", "Error to add virtual host");
             else
                 modelo.addAttribute("msgOfSystem", "Add virtual host successfully");
@@ -234,15 +235,16 @@ public class ControllerAdmin
         @RequestParam Optional<Integer> space,
         @RequestParam Optional<Integer> bandwidth,
         @RequestParam Optional<String> userad,
+        @RequestParam Optional<String> useradpassword,
         @RequestParam Optional<String> host,
         @RequestParam Optional<String> mode,
         @RequestParam Optional<String> delete,
         @RequestParam Optional<String> newIpStorage,
         @RequestParam Optional<String> newSpace)
     {
-        if(ip.isPresent() && space.isPresent() && bandwidth.isPresent() && userad.isPresent())
+        if(ip.isPresent() && space.isPresent() && bandwidth.isPresent() && userad.isPresent() && useradpassword.isPresent())
         {
-            if(stgop.addStorage(ip.get(), space.get(), bandwidth.get(), userad.get()) == null)
+            if(stgop.addStorage(ip.get(), space.get(), bandwidth.get(), userad.get(), useradpassword.get()) == null)
                 modelo.addAttribute("msgOfSystem", "Error to add virtual host");
             else
                 modelo.addAttribute("msgOfSystem", "Add virtual host successfully");

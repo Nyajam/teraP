@@ -27,15 +27,16 @@ public class VhostsOperation
      * @param freq frequency of cpu
      * @param mem memory in MiB
      * @param user user for access to the system
+     * @param password user's password (only to register)
      * @return Return the new Vhost if have been create (null if not)
      */
-    public Vhost addVhost(String ip, int cores, int freq, int mem, String user)
+    public Vhost addVhost(String ip, int cores, int freq, int mem, String user, String password)
     {
         Vhost tmp = null;
         try
         {
             tmp = vhRepo.save(new Vhost(ip, cores, freq, mem, user));
-            if(sysop.commandToInternalService("/checkhost/"+ip) == null)
+            if(sysop.commandToInternalServicePost("/addhost/"+ip+"/"+user, "{\"password\":\""+password+"\"}") == null) // /addhost/<IP>/<USER> {"password":"<PASSWORD>"}
             {
                 logRepo.save(new LogHost(tmp, "Error with the internal service for locate the host"));
                 return null;
@@ -61,6 +62,7 @@ public class VhostsOperation
             return false;
         logRepo.deleteByVhost(vhost);
         vhRepo.delete(vhost); //Delete host
+        sysop.commandToInternalService("/removehost/"+vhost.ip);
         return true;
     }
 

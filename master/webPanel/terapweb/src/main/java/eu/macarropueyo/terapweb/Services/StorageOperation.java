@@ -28,15 +28,16 @@ public class StorageOperation
      * @param space
      * @param bandwidth
      * @param user User for iSCSI control
+     * @param password user's password (only to register)
      * @return Storage created, null if not
      */
-    public Storage addStorage(String ip, int space, int bandwidth, String user)
+    public Storage addStorage(String ip, int space, int bandwidth, String user, String password)
     {
         Storage tmp = null;
         try
         {
             tmp = stRepo.save(new Storage(ip, space, bandwidth, user));
-            if(sysop.commandToInternalService("/addstorage/"+ip) == null)
+            if(sysop.commandToInternalServicePost("/addstorage/"+ip+"/"+user, "{\"password\":\""+password+"\"}") == null)
             {
                 logRepo.save(new LogStorage(tmp, "Error with the internal service to add storage"));
                 return null;
@@ -56,12 +57,13 @@ public class StorageOperation
      */
     public boolean removeStorage(Storage stg)
     {
-        if(!stg.vdisks.isEmpty())
-            return false;
         try
         {
+            if(!stg.vdisks.isEmpty())
+                return false;
             logRepo.deleteByStorage(stg);
             stRepo.delete(stg);
+            sysop.commandToInternalService("/removestorage/"+stg.ip);
         }
         catch(Exception e)
         {
