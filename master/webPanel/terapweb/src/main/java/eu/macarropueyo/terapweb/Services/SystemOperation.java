@@ -186,7 +186,7 @@ public class SystemOperation
     public void setAllocationOrder(String order)
     {
         setSystemValue("allocationOrder", order);
-        commandToInternalService("/allocationoder/"+order);
+        commandToInternalService("/allocationorder/"+order);
     }
 
     /**
