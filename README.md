@@ -25,7 +25,7 @@ This software is designed over Rocky Linux 9.
 - Mariadb 10.5.22
 - Python 3.9
 
-This code use Spring 3.2.4
+This code use Spring 3.4.2
 
 ## Install
 
